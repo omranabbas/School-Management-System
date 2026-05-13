@@ -19,19 +19,3 @@ Route::middleware([
     Route::post('/login', LoginController::class);
 
 });
-
-
-
-
-Route::middleware('auth:sanctum')->group(function () {
-
-    Route::get('/dashboard', function () {
-
-        return response()->json([
-            'message' => 'Welcome to dashboard',
-            'user' => request()->user(),
-        ]);
-
-    });
-
-});
