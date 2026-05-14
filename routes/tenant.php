@@ -44,3 +44,7 @@ Route::middleware([
         ]);
     });
 });
+
+Route::get('f',function(){
+dd(sys_get_temp_dir());
+});

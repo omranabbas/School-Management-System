@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('teacher_id')->unique()->constrained('users')->cascadeOnDelete();
             $table->integer('years_experience');
-            $table->string('certificate_image');
+            $table->string('certificate_image')->nullable();
             $table->timestamps();
         });
     }

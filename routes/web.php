@@ -32,3 +32,12 @@ Route::get('all-users',function(){
     ]);
     });
 });
+
+
+Route::withoutMiddleware([
+    \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+])->group(function () {
+    \Livewire\Livewire::setUpdateRoute(function ($handle) {
+        return Route::post('/livewire/update', $handle);
+    });
+});
