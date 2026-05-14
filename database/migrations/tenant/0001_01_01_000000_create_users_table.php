@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('password');
             $table->date('date_of_birth');
             $table->softDeletes();
-            $table->string('tenant_id');
             $table->rememberToken();
             $table->timestamps();
         });

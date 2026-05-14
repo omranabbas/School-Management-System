@@ -16,8 +16,8 @@ return new class extends Migration
     $table->foreignId('enrollment_id')
           ->constrained('student_enrollments')
           ->cascadeOnDelete();
-    $table->foreignId('teacher_subject_id')
-          ->constrained('teacher_subject')
+    $table->foreignId('teacher_subjects_id')
+          ->constrained('teacher_subjects')
           ->restrictOnDelete();
     $table->decimal('score', 8, 2);
     $table->decimal('max_score', 8, 2);
@@ -27,7 +27,7 @@ return new class extends Migration
     $table->timestamps();
     $table->unique([
         'enrollment_id',
-        'teacher_subject_id',
+        'teacher_subjects_id',
         'term',
         'type'
     ]);
