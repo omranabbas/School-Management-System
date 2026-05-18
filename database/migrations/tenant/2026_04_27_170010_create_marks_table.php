@@ -12,26 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('marks', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('enrollment_id')
-          ->constrained('student_enrollments')
-          ->cascadeOnDelete();
-    $table->foreignId('teacher_subjects_id')
-          ->constrained('teacher_subjects')
-          ->restrictOnDelete();
-    $table->decimal('score', 8, 2);
-    $table->decimal('max_score', 8, 2);
-    $table->integer('term');
-    $table->enum('type', ['midterm', 'final']);
-    $table->date('exam_date');
-    $table->timestamps();
-    $table->unique([
-        'enrollment_id',
-        'teacher_subjects_id',
-        'term',
-        'type'
-    ]);
-});
+            $table->id();
+            $table->foreignId('enrollment_id')
+                ->constrained('student_enrollments')
+                ->cascadeOnDelete();
+            $table->foreignId('teacher_subject_id')
+                ->constrained('teacher_subjects')
+                ->restrictOnDelete();
+            $table->decimal('score', 8, 2);
+            $table->decimal('max_score', 8, 2);
+            $table->integer('term');
+            $table->enum('type', ['midterm', 'final']);
+            $table->date('exam_date');
+            $table->timestamps();
+            $table->unique([
+                'enrollment_id',
+                'teacher_subject_id',
+                'term',
+                'type'
+            ]);
+        });
     }
 
     /**
