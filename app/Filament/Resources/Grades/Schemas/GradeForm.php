@@ -6,6 +6,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use App\Models\User;
 
 class GradeForm
 {
@@ -19,21 +20,16 @@ class GradeForm
                         ->required()
                         ->maxLength(255),
 
-                    // Select::make('stage')
-                    //     ->label('Stage')
-                    //     ->options([
-                    //         'primary' => 'Primary',
-                    //         'preparatory' => 'Preparatory',
-                    //         'secondary' => 'Secondary',
-                    //     ])
-                    //     ->required(),
-
                     Select::make('supervisor_id')
                         ->label('Supervisor')
                         ->relationship(
                             name: 'supervisor',
                             titleAttribute: 'name',
                             modifyQueryUsing: fn($query) => $query->where('role', 'supervisor')
+                        )
+                        ->getOptionLabelFromRecordUsing(
+                            fn(User $record) =>
+                            $record->name . ' ' . $record->father_name . ' ' . $record->last_name
                         )
                         ->searchable()
                         ->preload()

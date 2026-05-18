@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Supervisors\RelationManagers;
+namespace App\Filament\Resources\Grades\RelationManagers;
 
+use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DissociateAction;
+use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
@@ -16,15 +19,16 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Support\Icons\Heroicon;
 
-class GradesRelationManager extends RelationManager
+class SubjectsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'supervisedGrades';
+    protected static string $relationship = 'subjects';
 
     public function form(Schema $schema): Schema
     {
         return $schema
-            ->components([
+             ->components([
                 TextInput::make('name')
+                    ->label('Subject Name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -44,12 +48,14 @@ class GradesRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
-
-                    TextColumn::make('created_at')
-                    ->dateTime()
-                    ->icon(Heroicon::Calendar)
+                    ->searchable()
                     ->sortable(),
+
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->icon(Heroicon::Calendar)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -58,8 +64,8 @@ class GradesRelationManager extends RelationManager
                 CreateAction::make(),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
+                    ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

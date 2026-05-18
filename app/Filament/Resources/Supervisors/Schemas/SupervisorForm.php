@@ -23,10 +23,13 @@ class SupervisorForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('last_name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('father_name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('email')
                                     ->email()
@@ -67,15 +70,7 @@ class SupervisorForm
                                         'secondary' => 'Secondary',
                                     ])
                                     ->required()->unique(ignoreRecord: true),
-                                    
-                                FileUpload::make('certificate_image')
-                                ->directory(tenant('id'))
-                                    ->disk('public')
-                                    ->required()
-                                    ->columnSpanFull()
-                                    ->image()
-                                    ->maxSize(2048)->acceptedFileTypes(['image/jpeg', 'image/png']),
-                                // TextInput::make('certificate_image')->required()
+
                             ]),
                     ]),
 

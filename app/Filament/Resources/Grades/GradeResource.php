@@ -7,6 +7,7 @@ use App\Filament\Resources\Grades\Pages\EditGrade;
 use App\Filament\Resources\Grades\Pages\ListGrades;
 use App\Filament\Resources\Grades\Pages\ViewGrade;
 use App\Filament\Resources\Grades\RelationManagers\SectionsRelationManager;
+use App\Filament\Resources\Grades\RelationManagers\SubjectsRelationManager;
 use App\Filament\Resources\Grades\Schemas\GradeForm;
 use App\Filament\Resources\Grades\Schemas\GradeInfolist;
 use App\Filament\Resources\Grades\Tables\GradesTable;
@@ -16,12 +17,15 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class GradeResource extends Resource
 {
     protected static ?string $model = Grade::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingLibrary;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::BuildingLibrary;
+
+    protected static string | UnitEnum | null $navigationGroup = 'Academic Structure';
 
     public static function form(Schema $schema): Schema
     {
@@ -41,7 +45,8 @@ class GradeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            SectionsRelationManager::class
+            SectionsRelationManager::class,
+            SubjectsRelationManager::class
         ];
     }
 

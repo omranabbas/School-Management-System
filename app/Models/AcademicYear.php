@@ -13,7 +13,7 @@ class AcademicYear extends Model
         'name',
         'is_active'
     ];
-
+    
     public function enrollments()
     {
         return $this->hasMany(StudentEnrollment::class);

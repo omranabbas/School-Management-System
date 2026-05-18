@@ -22,10 +22,13 @@ class StudentsForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('last_name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('father_name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('email')
                                     ->email()
@@ -65,14 +68,7 @@ class StudentsForm
                                     ->tel()
                                     ->required()
                                     ->maxLength(20),
-                                FileUpload::make('personal_image')
-                                    ->directory('personal_images')
-                                    ->disk('public')
-                                    ->required()
-                                    ->columnSpanFull()
-                                    ->image()
-                                    ->maxSize(2048)->acceptedFileTypes(['image/jpeg', 'image/png']),
-                                // TextInput::make('personal_image')->required()
+
 
                             ]),
                     ]),

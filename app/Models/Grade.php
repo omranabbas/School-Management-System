@@ -11,7 +11,6 @@ class Grade extends Model
 
     protected $fillable = [
         'name',
-        // 'stage',
         'supervisor_id'
     ];
 

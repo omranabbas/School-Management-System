@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            // $table->enum('stage', ['primary', 'preparatory', 'secondary']);
+            $table->string('name')->unique();
             $table->foreignId('supervisor_id')->constrained('users')->restrictOnDelete();
             $table->timestamps();
-            $table->unique(['name', 'stage']);
         });
     }
 

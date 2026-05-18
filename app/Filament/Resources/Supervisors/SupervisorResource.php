@@ -25,7 +25,7 @@ class SupervisorResource extends Resource
 
     protected static ?string $modelLabel = 'Supervisors';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Users';
+    protected static string | UnitEnum | null $navigationGroup = 'Users & Staff';
 
     protected static ?int $navigationSort = 1;
 

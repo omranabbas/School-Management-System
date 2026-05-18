@@ -4,16 +4,19 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Filament\Panel;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory,HasApiTokens,Notifiable,SoftDeletes;
+    use HasFactory, HasApiTokens, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -51,11 +54,16 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'date_of_birth'=>'datetime',
+            'date_of_birth' => 'datetime',
         ];
     }
 
-        public function studentProfile()
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function studentProfile()
     {
         return $this->hasOne(StudentProfile::class, 'student_id');
     }
@@ -80,5 +88,8 @@ class User extends Authenticatable
         return $this->hasMany(StudentEnrollment::class, 'student_id');
     }
 
-
+    public function teacherSubjects()
+    {
+        return $this->hasMany(TeacherSubject::class, 'teacher_id');
+    }
 }
