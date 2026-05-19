@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\TeacherSubjectController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\MarkController;
 use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\GradeController;
+use App\Http\Controllers\Api\SectionController;
 
 Route::middleware([
     'api',
@@ -24,14 +26,13 @@ Route::middleware([
     // Auth
 
     Route::post('/register', RegisterController::class);
-
     Route::post('/login', LoginController::class);
-
     Route::middleware('auth:sanctum')->group(function () {
 
-
+Route::apiResource('grade',GradeController::class);
+Route::apiResource('section',SectionController::class);
         Route::middleware('role:admin')->group(function () {
-
+        
             // Teacher Assignments
 
             Route::post(
