@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\TeacherSubjectController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\MarkController;
 use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\ScheduleController;
 
 Route::middleware([
     'api',
@@ -52,6 +53,17 @@ Route::middleware([
 
         });
 
+        Route::middleware('role:supervisor')->group(function () {
+
+            // Schedules
+
+            Route::post(
+                '/schedules',
+                [ScheduleController::class, 'store']
+    );
+
+});
+
         Route::middleware('role:teacher')->group(function () {
 
             // Marks
@@ -66,6 +78,52 @@ Route::middleware([
             Route::post(
                 '/attendances',
                 [AttendanceController::class, 'store']
+            );
+
+            // Teacher Schedules
+
+            Route::get(
+                '/teacher-schedules',
+                [ScheduleController::class, 'teacherSchedule']
+            );
+
+            // Teacher Marks
+
+            Route::get(
+                '/teacher-marks',
+                [MarkController::class, 'teacherMarks']
+            );
+
+            // Teacher Attendance
+            
+            Route::get(
+                '/teacher-attendances',
+                [AttendanceController::class, 'teacherAttendances']
+            );
+
+        });
+
+        Route::middleware('role:student')->group(function () {
+
+            // Student Schedules
+
+            Route::get(
+                '/student-schedules',
+                [ScheduleController::class, 'studentSchedule']
+            );
+
+            // Student Marks    
+
+            Route::get(
+                '/student-marks',
+                [MarkController::class, 'studentMarks']
+            );
+
+            // Student Attendance
+
+            Route::get(
+                '/student-attendances',
+                [AttendanceController::class, 'studentAttendances']
             );
 
         });
