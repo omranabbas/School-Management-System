@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\MarkController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\GradeController;
+use App\Http\Controllers\Api\SectionController;
 
 Route::middleware([
     'api',
@@ -22,16 +24,35 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->prefix('api')->group(function () {
 
-    // Auth
+    //Auth
 
     Route::post('/register', RegisterController::class);
 
     Route::post('/login', LoginController::class);
 
+
+
     Route::middleware('auth:sanctum')->group(function () {
 
+        /*
+        Admin Routes
+        */
 
         Route::middleware('role:admin')->group(function () {
+
+            // Grades
+
+            Route::apiResource(
+                'grades',
+                GradeController::class
+            );
+
+            // Sections
+
+            Route::apiResource(
+                'sections',
+                SectionController::class
+            );
 
             // Teacher Assignments
 
@@ -41,6 +62,10 @@ Route::middleware([
             );
 
         });
+
+        /*
+        Admin & Supervisor Routes
+        */
 
         Route::middleware('role:admin,supervisor')->group(function () {
 
@@ -53,6 +78,10 @@ Route::middleware([
 
         });
 
+        /*
+        Supervisor Routes
+        */
+
         Route::middleware('role:supervisor')->group(function () {
 
             // Schedules
@@ -60,9 +89,13 @@ Route::middleware([
             Route::post(
                 '/schedules',
                 [ScheduleController::class, 'store']
-    );
+            );
 
-});
+        });
+
+        /*
+        Teacher Routes
+        */
 
         Route::middleware('role:teacher')->group(function () {
 
@@ -95,13 +128,17 @@ Route::middleware([
             );
 
             // Teacher Attendance
-            
+
             Route::get(
                 '/teacher-attendances',
                 [AttendanceController::class, 'teacherAttendances']
             );
 
         });
+
+        /*
+        Student Routes
+        */
 
         Route::middleware('role:student')->group(function () {
 
@@ -112,7 +149,7 @@ Route::middleware([
                 [ScheduleController::class, 'studentSchedule']
             );
 
-            // Student Marks    
+            // Student Marks
 
             Route::get(
                 '/student-marks',

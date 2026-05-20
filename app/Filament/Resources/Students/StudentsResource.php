@@ -6,6 +6,7 @@ use App\Filament\Resources\Students\Pages\CreateStudents;
 use App\Filament\Resources\Students\Pages\EditStudents;
 use App\Filament\Resources\Students\Pages\ListStudents;
 use App\Filament\Resources\Students\Pages\ViewStudents;
+use App\Filament\Resources\Students\RelationManagers\EnrollmentsRelationManager;
 use App\Filament\Resources\Students\Schemas\StudentsForm;
 use App\Filament\Resources\Students\Schemas\StudentsInfolist;
 use App\Filament\Resources\Students\Tables\StudentsTable;
@@ -25,7 +26,7 @@ class StudentsResource extends Resource
 
     protected static ?string $modelLabel = 'Students';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Users';
+    protected static string | UnitEnum | null $navigationGroup = 'Users & Staff';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::UserGroup;
 
@@ -55,7 +56,7 @@ class StudentsResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            EnrollmentsRelationManager::class
         ];
     }
 

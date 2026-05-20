@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\Teachers;
 
+use App\Filament\Resources\Grades\RelationManagers\SubjectsRelationManager;
 use App\Filament\Resources\Teachers\Pages\CreateTeachers;
 use App\Filament\Resources\Teachers\Pages\EditTeachers;
 use App\Filament\Resources\Teachers\Pages\ListTeachers;
 use App\Filament\Resources\Teachers\Pages\ViewTeachers;
+use App\Filament\Resources\Teachers\RelationManagers\TeacherSubjectsRelationManager;
 use App\Filament\Resources\Teachers\Schemas\TeachersForm;
 use App\Filament\Resources\Teachers\Schemas\TeachersInfolist;
 use App\Filament\Resources\Teachers\Tables\TeachersTable;
@@ -25,7 +27,7 @@ class TeachersResource extends Resource
 
     protected static ?string $modelLabel = 'Teachers';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Users';
+    protected static string | UnitEnum | null $navigationGroup = 'Users & Staff';
 
     protected static ?int $navigationSort = 2;
 
@@ -54,7 +56,7 @@ class TeachersResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+    TeacherSubjectsRelationManager::class
         ];
     }
 

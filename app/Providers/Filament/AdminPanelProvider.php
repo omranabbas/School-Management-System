@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => Color::Green,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -40,8 +40,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+
+            ])->navigationGroups([
+                'Users & Staff',
+                'Academic Structure',
+                'Academic Operations',
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -56,7 +59,7 @@ class AdminPanelProvider extends PanelProvider
             ])->middleware([
                 InitializeTenancyByDomain::class,
                 PreventAccessFromCentralDomains::class
-            ],isPersistent:true)
+            ], isPersistent: true)
             ->authMiddleware([
                 Authenticate::class,
             ]);

@@ -23,14 +23,13 @@ class GradesTable
                     ->sortable(),
 
                 TextColumn::make('supervisor.supervisorProfile.stage')
-                ->label('stage')
+                    ->label('stage')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
                         'primary' => 'success',
                         'preparatory' => 'info',
                         'secondary' => 'danger',
                     })
-                    ->formatStateUsing(fn($state) => ucfirst($state))
                     ->sortable(),
 
                 TextColumn::make('supervisor.name')
@@ -46,13 +45,20 @@ class GradesTable
 
             ])
             ->filters([
-                SelectFilter::make('supervisor.supervisorProfile.stage')
-                ->label('stage')
+                SelectFilter::make('stage')
+                    ->label('Stage')
                     ->options([
                         'primary' => 'Primary',
                         'preparatory' => 'Preparatory',
                         'secondary' => 'Secondary',
-                    ]),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['value']) {
+                            $query->whereHas('supervisor.supervisorProfile', function ($q) use ($data) {
+                                $q->where('stage', $data['value']);
+                            });
+                        }
+                    }),
             ])
             ->recordActions([
                 ViewAction::make(),

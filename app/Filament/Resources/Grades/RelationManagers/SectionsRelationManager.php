@@ -16,6 +16,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
+use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Filters\SelectFilter;
 
 class SectionsRelationManager extends RelationManager
 {
@@ -26,9 +29,9 @@ class SectionsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('name')
-                ->label('Section Name')
-                ->required()
-                ->maxLength(255),
+                    ->label('Section Name')
+                    ->required()
+                    ->maxLength(255),
 
             ]);
     }
@@ -39,17 +42,25 @@ class SectionsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')->label('Section name')
-                    ->searchable()
+                    ->searchable(),
+
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->icon(Heroicon::Calendar)
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-
+                SelectFilter::make('grade_id')
+                    ->label('Grade')
+                    ->relationship('grade', 'name'),
             ])
             ->headerActions([
                 CreateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
+                ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

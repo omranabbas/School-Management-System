@@ -23,15 +23,6 @@ $tenant->domains()->create([
 return 1;
 })->name('tenant-store');
 
-Route::get('all-users',function(){
- Tenant::all()->runForEach(function(){
-       User::create([
-        'name'=>'omran1',
-        'password'=>Hash::make('12345678'),
-        'email'=>"omran1@gmail.com"
-    ]);
-    });
-});
 
 
 Route::withoutMiddleware([

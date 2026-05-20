@@ -14,6 +14,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Support\Icons\Heroicon;
 
 class GradesRelationManager extends RelationManager
 {
@@ -44,6 +45,11 @@ class GradesRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+
+                    TextColumn::make('created_at')
+                    ->dateTime()
+                    ->icon(Heroicon::Calendar)
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -54,7 +60,6 @@ class GradesRelationManager extends RelationManager
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

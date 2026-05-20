@@ -23,7 +23,12 @@ return new class extends Migration
                 'subject_id',
                 'section_id',
                 'academic_year_id'
-            ],'ts_unique');
+            ], 'ts_unique');
+            $table->unique([
+                'subject_id',
+                'section_id',
+                'academic_year_id'
+            ]);
         });
     }
 

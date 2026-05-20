@@ -16,7 +16,15 @@ class RegisterController extends Controller
             'last_name' => ['required'],
             'father_name' => ['required'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'min:8'],
+            'password' => [
+                'required',
+                'min:8',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*#?&]/',
+                'not_regex:/\s/',
+            ],
             'date_of_birth' => ['required', 'date'],
         ]);
 
@@ -30,11 +38,11 @@ class RegisterController extends Controller
             'date_of_birth' => $data['date_of_birth'],
         ]);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        // $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Admin registered successfully',
-            'token' => $token,
+            // 'token' => $token,
             'user' => $user,
         ], 201);
     }

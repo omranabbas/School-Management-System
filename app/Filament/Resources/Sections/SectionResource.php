@@ -9,18 +9,22 @@ use App\Filament\Resources\Sections\Pages\ViewSection;
 use App\Filament\Resources\Sections\Schemas\SectionForm;
 use App\Filament\Resources\Sections\Schemas\SectionInfolist;
 use App\Filament\Resources\Sections\Tables\SectionsTable;
+use App\Filament\Resources\Sections\RelationManagers\EnrollmentsRelationManager;
 use App\Models\Section;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class SectionResource extends Resource
 {
     protected static ?string $model = Section::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleGroup;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::RectangleGroup;
+
+        protected static string | UnitEnum | null $navigationGroup = 'Academic Structure';
 
     public static function form(Schema $schema): Schema
     {
@@ -40,7 +44,7 @@ class SectionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            EnrollmentsRelationManager::class
         ];
     }
 

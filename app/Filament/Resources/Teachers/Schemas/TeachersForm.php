@@ -20,10 +20,13 @@ class TeachersForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('last_name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('father_name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('email')
                                     ->email()
@@ -49,7 +52,7 @@ class TeachersForm
                             ->default('teacher'),
                     ]),
 
-                    Section::make('Teacher Profile')
+                Section::make('Teacher Profile')
                     ->relationship('teacherProfile')
                     ->schema([
                         Grid::make(2)
@@ -57,14 +60,6 @@ class TeachersForm
                                 TextInput::make('years_experience')
                                     ->numeric()
                                     ->required()->minValue(0),
-                                // FileUpload::make('certificate_image')
-                                //     ->disk('local')
-                                //     ->directory(fn() => Auth::user()->tenant_id . '/certificates')
-                                //     ->required()
-                                //     ->columnSpanFull()
-                                // ->image()
-                                //     ->maxSize(2048)->acceptedFileTypes(['image/jpeg', 'image/png']),
-                                TextInput::make('certificate_image')->required()
                             ]),
                     ]),
             ]);
