@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Attendance;
+use App\Models\StudentEnrollment;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAttendanceRequest;
-use App\Models\StudentEnrollment;
+use App\Http\Resources\AttendanceResource;
+
 class AttendanceController extends Controller
 {
     public function store(StoreAttendanceRequest $request)
@@ -14,15 +17,20 @@ class AttendanceController extends Controller
             $request->validated()
         );
 
+        $attendance->load([
+            'enrollment.student',
+            'enrollment.section',
+        ]);
+
         return response()->json([
             'message' => 'Attendance recorded successfully',
-            'data' => $attendance,
+            'data' => new AttendanceResource($attendance),
         ], 201);
     }
 
     public function studentAttendances()
     {
-        $studentId = auth()->id();
+        $studentId = Auth::id();
 
         $enrollment = StudentEnrollment::where(
             'student_id',
@@ -37,21 +45,25 @@ class AttendanceController extends Controller
 
         }
 
-        $attendances = Attendance::where(
+        $attendances = Attendance::with([
+            'enrollment.student',
+            'enrollment.section',
+        ])
+        ->where(
             'enrollment_id',
             $enrollment->id
         )
-        ->orderByDesc('date')
+        ->latest()
         ->get();
 
-        return response()->json([
-            'data' => $attendances,
-        ]);
+        return AttendanceResource::collection(
+            $attendances
+        );
     }
 
     public function teacherAttendances()
     {
-        $teacherId = auth()->id();
+        $teacherId = Auth::id();
 
         $attendances = Attendance::with([
             'enrollment.student',
@@ -68,11 +80,11 @@ class AttendanceController extends Controller
 
             }
         )
-        ->orderByDesc('date')
+        ->latest()
         ->get();
 
-        return response()->json([
-            'data' => $attendances,
-        ]);
+        return AttendanceResource::collection(
+            $attendances
+        );
     }
 }

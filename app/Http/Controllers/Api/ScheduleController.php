@@ -6,6 +6,8 @@ use App\Models\Schedule;
 use App\Models\StudentEnrollment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreScheduleRequest;
+use App\Http\Resources\ScheduleResource;
+use Illuminate\Support\Facades\Auth;
 
 class ScheduleController extends Controller
 {
@@ -15,39 +17,52 @@ class ScheduleController extends Controller
             $request->validated()
         );
 
+        $schedule->load([
+            'teacherSubject.subject',
+            'teacherSubject.teacher',
+            'teacherSubject.section',
+        ]);
+
         return response()->json([
             'message' => 'Schedule created successfully',
-            'data' => $schedule,
+            'data' => new ScheduleResource($schedule),
         ], 201);
     }
-    
+
     public function teacherSchedule()
     {
-        $teacherId = auth()->id();
+        $teacherId = Auth::id();
 
-        $schedules = \App\Models\Schedule::with([
+        $schedules = Schedule::with([
             'teacherSubject.subject',
+            'teacherSubject.teacher',
             'teacherSubject.section',
         ])
-        ->whereHas('teacherSubject', function ($query) use ($teacherId) {
+        ->whereHas(
+            'teacherSubject',
+            function ($query) use ($teacherId) {
 
-            $query->where('teacher_id', $teacherId);
+                $query->where(
+                    'teacher_id',
+                    $teacherId
+                );
 
-        })
+            }
+        )
         ->orderBy('day')
         ->orderBy('period')
         ->get();
 
-        return response()->json([
-            'data' => $schedules,
-        ]);
+        return ScheduleResource::collection(
+            $schedules
+        );
     }
 
     public function studentSchedule()
     {
-        $studentId = auth()->id();
+        $studentId = Auth::id();
 
-        $enrollment =StudentEnrollment::where(
+        $enrollment = StudentEnrollment::where(
             'student_id',
             $studentId
         )->latest()->first();
@@ -65,18 +80,25 @@ class ScheduleController extends Controller
         $schedules = Schedule::with([
             'teacherSubject.subject',
             'teacherSubject.teacher',
+            'teacherSubject.section',
         ])
-        ->whereHas('teacherSubject', function ($query) use ($sectionId) {
+        ->whereHas(
+            'teacherSubject',
+            function ($query) use ($sectionId) {
 
-            $query->where('section_id', $sectionId);
+                $query->where(
+                    'section_id',
+                    $sectionId
+                );
 
-        })
+            }
+        )
         ->orderBy('day')
         ->orderBy('period')
         ->get();
 
-        return response()->json([
-            'data' => $schedules,
-        ]);
+        return ScheduleResource::collection(
+            $schedules
+        );
     }
 }
