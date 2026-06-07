@@ -6,9 +6,8 @@ use App\Models\Schedule;
 use App\Models\TeacherSubject;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
-class StoreScheduleRequest extends FormRequest
+class UpdateScheduleRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -61,29 +60,15 @@ class StoreScheduleRequest extends FormRequest
     {
         $validator->after(function ($validator) {
 
-            $teacherSubject = TeacherSubject::with([
-                'section.grade'
-            ])->find($this->teacher_subject_id);
+            $teacherSubject = TeacherSubject::find(
+                $this->teacher_subject_id
+            );
 
             if (! $teacherSubject) {
                 return;
             }
-            
-            $user = Auth::user();
 
-            if (
-                $user &&
-                $user->role === 'supervisor' &&
-                $teacherSubject->section->grade->supervisor_id !== $user->id
-            ) {
-
-                $validator->errors()->add(
-                    'teacher_subject_id',
-                    'You cannot manage schedules outside your assigned grades.'
-                );
-
-                return;
-            }
+            $schedule = $this->route('schedule');
 
             $teacherConflict = Schedule::where(
                 'day',
@@ -92,6 +77,11 @@ class StoreScheduleRequest extends FormRequest
                 ->where(
                     'period',
                     $this->period
+                )
+                ->where(
+                    'id',
+                    '!=',
+                    $schedule->id
                 )
                 ->whereHas(
                     'teacherSubject',
@@ -122,6 +112,11 @@ class StoreScheduleRequest extends FormRequest
                 ->where(
                     'period',
                     $this->period
+                )
+                ->where(
+                    'id',
+                    '!=',
+                    $schedule->id
                 )
                 ->whereHas(
                     'teacherSubject',

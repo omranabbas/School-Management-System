@@ -24,147 +24,160 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->prefix('api')->group(function () {
 
-    //Auth
+    // Auth
 
     Route::post('/register', RegisterController::class);
-
     Route::post('/login', LoginController::class);
-
-
 
     Route::middleware('auth:sanctum')->group(function () {
 
-        /*
-        Admin Routes
-        */
+        // Admin routes
 
         Route::middleware('role:admin')->group(function () {
-
-            // Grades
 
             Route::apiResource(
                 'grades',
                 GradeController::class
             );
 
-            // Sections
-
             Route::apiResource(
                 'sections',
                 SectionController::class
             );
-
-            // Teacher Assignments
-
-            Route::post(
-                '/teacher-subjects',
-                [TeacherSubjectController::class, 'store']
-            );
-
         });
 
-        /*
-        Admin & Supervisor Routes
-        */
+        // Admin and Supervisor routes
 
         Route::middleware('role:admin,supervisor')->group(function () {
 
-            // Student Enrollment
-
+            // Enrollments
             Route::post(
                 '/enrollments',
                 [EnrollmentController::class, 'store']
             );
 
+            // Teacher Subjects
+            Route::post(
+                '/teacher-subjects',
+                [TeacherSubjectController::class, 'store']
+            );
         });
 
-        /*
-        Supervisor Routes
-        */
+       // Supervisor routes
 
         Route::middleware('role:supervisor')->group(function () {
 
-            // Schedules
+           // Schedule
+            
 
             Route::post(
                 '/schedules',
                 [ScheduleController::class, 'store']
             );
 
-        });
+            Route::put(
+                '/schedules/{schedule}',
+                [ScheduleController::class, 'update']
+            );
 
-        /*
-        Teacher Routes
-        */
+            Route::delete(
+                '/schedules/{schedule}',
+                [ScheduleController::class, 'destroy']
+            );
 
-        Route::middleware('role:teacher')->group(function () {
-
-            // Marks
-
-            Route::post(
-                '/marks',
-                [MarkController::class, 'store']
+            Route::get(
+                '/supervisor-schedules',
+                [ScheduleController::class, 'supervisorSchedule']
             );
 
             // Attendance
+            
 
             Route::post(
                 '/attendances',
                 [AttendanceController::class, 'store']
             );
 
-            // Teacher Schedules
+            Route::put(
+                '/attendances/{attendance}',
+                [AttendanceController::class, 'update']
+            );
+
+            Route::delete(
+                '/attendances/{attendance}',
+                [AttendanceController::class, 'destroy']
+            );
+
+            Route::get(
+                '/supervisor-attendances',
+                [AttendanceController::class, 'supervisorAttendances']
+            );
+        });
+
+        // Teacher routes
+       
+
+        Route::middleware('role:teacher')->group(function () {
+
+            // Marks
+         
+
+            Route::post(
+                '/marks',
+                [MarkController::class, 'store']
+            );
+
+            Route::get(
+                '/marks/{mark}',
+                [MarkController::class, 'show']
+            );
+
+            Route::put(
+                '/marks/{mark}',
+                [MarkController::class, 'update']
+            );
+
+            Route::delete(
+                '/marks/{mark}',
+                [MarkController::class, 'destroy']
+            );
+
+            // Teacher Schedule
+            
 
             Route::get(
                 '/teacher-schedules',
                 [ScheduleController::class, 'teacherSchedule']
             );
 
+            
             // Teacher Marks
+            
 
             Route::get(
                 '/teacher-marks',
                 [MarkController::class, 'teacherMarks']
             );
-
-            // Teacher Attendance
-
-            Route::get(
-                '/teacher-attendances',
-                [AttendanceController::class, 'teacherAttendances']
-            );
-
         });
 
-        /*
-        Student Routes
-        */
+        // Student routes      
 
         Route::middleware('role:student')->group(function () {
-
-            // Student Schedules
 
             Route::get(
                 '/student-schedules',
                 [ScheduleController::class, 'studentSchedule']
             );
 
-            // Student Marks
-
             Route::get(
                 '/student-marks',
                 [MarkController::class, 'studentMarks']
             );
 
-            // Student Attendance
-
             Route::get(
                 '/student-attendances',
                 [AttendanceController::class, 'studentAttendances']
             );
-
         });
-
     });
-
 });

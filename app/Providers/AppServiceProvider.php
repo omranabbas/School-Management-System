@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Grade;
 use App\Policies\GradePolicy;
+use App\Models\Mark;
+use App\Policies\MarkPolicy;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -22,5 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Grade::class, GradePolicy::class);
+        Gate::policy(Mark::class,MarkPolicy::class);
+        
     }
 }

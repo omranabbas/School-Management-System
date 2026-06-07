@@ -7,24 +7,83 @@ use App\Models\StudentEnrollment;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMarkRequest;
+use App\Http\Requests\UpdateMarkRequest;
 use App\Http\Resources\MarkResource;
+use App\Traits\ApiResponse;
 
 class MarkController extends Controller
 {
-    public function store(StoreMarkRequest $request)
+    use ApiResponse;
+
+    public function show(Mark $mark)
     {
-        $mark = Mark::with([
+        $this->authorize('view', $mark);
+
+        $mark->load([
             'teacherSubject.subject',
             'teacherSubject.teacher',
             'enrollment.student',
-        ])->create(
+        ]);
+
+        return $this->successResponse(
+            new MarkResource($mark),
+            'Mark fetched successfully'
+        );
+    }
+
+    public function store(StoreMarkRequest $request)
+    {
+        $this->authorize('create', Mark::class);
+
+        $mark = Mark::create(
             $request->validated()
         );
 
-        return response()->json([
-            'message' => 'Mark added successfully',
-            'data' => new MarkResource($mark),
-        ], 201);
+        $mark->load([
+            'teacherSubject.subject',
+            'teacherSubject.teacher',
+            'enrollment.student',
+        ]);
+
+        return $this->successResponse(
+            new MarkResource($mark),
+            'Mark added successfully',
+            201
+        );
+    }
+
+    public function update(
+        UpdateMarkRequest $request,
+        Mark $mark
+    ) {
+        $this->authorize('update', $mark);
+
+        $mark->update(
+            $request->validated()
+        );
+
+        $mark->load([
+            'teacherSubject.subject',
+            'teacherSubject.teacher',
+            'enrollment.student',
+        ]);
+
+        return $this->successResponse(
+            new MarkResource($mark),
+            'Mark updated successfully'
+        );
+    }
+
+    public function destroy(Mark $mark)
+    {
+        $this->authorize('delete', $mark);
+
+        $mark->delete();
+
+        return $this->successResponse(
+            null,
+            'Mark deleted successfully'
+        );
     }
 
     public function studentMarks()
@@ -38,11 +97,14 @@ class MarkController extends Controller
 
         if (! $enrollment) {
 
-            return response()->json([
-                'message' => 'Student is not enrolled'
-            ], 404);
+            return $this->errorResponse(
+                'Student is not enrolled',
+                404
+            );
 
         }
+
+        $perPage = request('per_page', 15);
 
         $marks = Mark::with([
             'teacherSubject.subject',
@@ -54,14 +116,19 @@ class MarkController extends Controller
             $enrollment->id
         )
         ->latest()
-        ->get();
+        ->paginate($perPage);
 
-        return MarkResource::collection($marks);
+        return $this->successResponse(
+            MarkResource::collection($marks),
+            'Marks fetched successfully'
+        );
     }
 
     public function teacherMarks()
     {
         $teacherId = Auth::id();
+
+        $perPage = request('per_page', 15);
 
         $marks = Mark::with([
             'enrollment.student',
@@ -80,8 +147,11 @@ class MarkController extends Controller
             }
         )
         ->latest()
-        ->get();
+        ->paginate($perPage);
 
-        return MarkResource::collection($marks);
+        return $this->successResponse(
+            MarkResource::collection($marks),
+            'Marks fetched successfully'
+        );
     }
 }
