@@ -9,6 +9,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\LogoutController;
 
 use App\Http\Controllers\Api\TeacherSubjectController;
 use App\Http\Controllers\Api\EnrollmentController;
@@ -31,6 +32,11 @@ Route::middleware([
 
     Route::middleware('auth:sanctum')->group(function () {
 
+        // Logout
+        Route::post(
+            '/logout',
+            LogoutController::class
+        );
         // Admin and Supervisor routes
 
         Route::middleware('role:admin,supervisor')->group(function () {
@@ -46,7 +52,7 @@ Route::middleware([
                 'sections',
                 SectionController::class
             );
-            
+
             // Enrollments
             Route::post(
                 '/enrollments',
