@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Traits\ApiResponse;
 use App\Models\Schedule;
 use App\Models\StudentEnrollment;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,8 @@ use App\Http\Resources\ScheduleResource;
 
 class ScheduleController extends Controller
 {
+    use ApiResponse;
+
     public function store(StoreScheduleRequest $request)
     {
         $this->authorize('create', Schedule::class);
@@ -26,10 +29,11 @@ class ScheduleController extends Controller
             'teacherSubject.section',
         ]);
 
-        return response()->json([
-            'message' => 'Schedule created successfully',
-            'data' => new ScheduleResource($schedule),
-        ], 201);
+        return $this->successResponse(
+            new ScheduleResource($schedule),
+            'Schedule created successfully',
+            201
+        );
     }
 
     public function update(UpdateScheduleRequest $request,Schedule $schedule) 
@@ -46,21 +50,22 @@ class ScheduleController extends Controller
             'teacherSubject.section',
         ]);
 
-        return response()->json([
-            'message' => 'Schedule updated successfully',
-            'data' => new ScheduleResource($schedule),
-        ]);
+        return $this->successResponse(
+            new ScheduleResource($schedule),
+            'Schedule updated successfully'
+        );
     }
 
-    public function destroy(Schedule $schedule)
+   public function destroy(Schedule $schedule)
     {
         $this->authorize('delete', $schedule);
 
         $schedule->delete();
 
-        return response()->json([
-            'message' => 'Schedule deleted successfully',
-        ]);
+        return $this->successResponse(
+            null,
+            'Schedule deleted successfully'
+        );
     }
 
     public function teacherSchedule()
@@ -89,7 +94,10 @@ class ScheduleController extends Controller
             ->orderBy('period')
             ->get();
 
-        return ScheduleResource::collection($schedules);
+        return $this->successResponse(
+            ScheduleResource::collection($schedules),
+            'Schedules fetched successfully'
+        );
     }
 
     public function studentSchedule()
@@ -103,9 +111,10 @@ class ScheduleController extends Controller
 
         if (! $enrollment) {
 
-            return response()->json([
-                'message' => 'Student is not enrolled'
-            ], 404);
+            return $this->errorResponse(
+                'Student is not enrolled',
+                404
+            );
 
         }
 
@@ -132,7 +141,10 @@ class ScheduleController extends Controller
             ->orderBy('period')
             ->get();
 
-        return ScheduleResource::collection($schedules);
+        return $this->successResponse(
+            ScheduleResource::collection($schedules),
+            'Schedules fetched successfully'
+        );    
     }
 
     public function supervisorSchedule()
@@ -166,6 +178,9 @@ class ScheduleController extends Controller
             ->orderBy('period')
             ->get();
 
-        return ScheduleResource::collection($schedules);
+        return $this->successResponse(
+            ScheduleResource::collection($schedules),
+            'Schedules fetched successfully'
+        );    
     }
 }

@@ -31,25 +31,22 @@ Route::middleware([
 
     Route::middleware('auth:sanctum')->group(function () {
 
-        // Admin routes
+        // Admin and Supervisor routes
 
-        Route::middleware('role:admin')->group(function () {
+        Route::middleware('role:admin,supervisor')->group(function () {
 
+            // Grades 
             Route::apiResource(
                 'grades',
                 GradeController::class
             );
 
+            // Sections
             Route::apiResource(
                 'sections',
                 SectionController::class
             );
-        });
-
-        // Admin and Supervisor routes
-
-        Route::middleware('role:admin,supervisor')->group(function () {
-
+            
             // Enrollments
             Route::post(
                 '/enrollments',
