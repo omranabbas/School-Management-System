@@ -2,29 +2,39 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Grade;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\GradeResource;
+use App\Traits\ApiResponse;
+use App\Http\Requests\StoreGradeRequest;
+use App\Http\Requests\UpdateGradeRequest;
 
 class GradeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use ApiResponse;
 
     public function __construct()
     {
         $this->authorizeResource(Grade::class, 'grade');
     }
+
     public function index()
     {
-        return Grade::with('supervisor')->get();
+        $grades = Grade::with('supervisor')->get();
+
+        return $this->successResponse(
+            GradeResource::collection($grades),
+            'Grades fetched successfully'
+        );
     }
 
-    public function store(Request $request)
+    public function store(StoreGradeRequest $request)
     {
+        $grade = Auth::user()->supervisedGrades()->create(
+                $request->validated()
+            );
+
 
          $request->validate([
             'name' => 'required|string|unique:grades,name',
@@ -34,40 +44,49 @@ class GradeController extends Controller
             'name' => $request->name,
         ]);
 
-        return response()->json([
-            'message' => 'Grade created successfully',
-            'data' => $grade
-        ], 201);
+   
+            return $this->successResponse(
+            new GradeResource(
+                $grade->load('supervisor')
+            ),
+            'Grade created successfully',
+            201
+        );
     }
 
     public function show(Grade $grade)
     {
-        return $grade->load('supervisor');
+        return $this->successResponse(
+            new GradeResource(
+                $grade->load('supervisor')
+            ),
+            'Grade fetched successfully'
+        );
     }
 
-    public function update(Request $request, Grade $grade)
-    {
+    public function update(
+        UpdateGradeRequest $request,
+        Grade $grade
+    ) {
+        $grade->update(
+            $request->validated()
+        );
 
-        $validated = $request->validate([
-            'name' => ['required','string',
-            Rule::unique('users')->ignore($grade->id)]
-        ]);
-
-        $grade->update($validated);
-
-        return response()->json([
-            'message' => 'Grade updated successfully',
-            'data' => $grade
-        ]);
+        return $this->successResponse(
+            new GradeResource(
+                $grade->load('supervisor')
+            ),
+            'Grade updated successfully'
+        );
     }
 
     public function destroy(Grade $grade)
     {
-
         $grade->delete();
 
-        return response()->json([
-            'message' => 'Grade deleted successfully'
-        ]);
+        return $this->successResponse(
+            null,
+            'Grade deleted successfully'
+        );
     }
 }

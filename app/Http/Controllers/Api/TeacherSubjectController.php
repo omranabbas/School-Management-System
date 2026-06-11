@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\TeacherSubject;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeacherSubjectRequest;
+use App\Traits\ApiResponse;
 
 class TeacherSubjectController extends Controller
 {
+    use ApiResponse;
+
     public function store(StoreTeacherSubjectRequest $request)
     {
         $teacherSubject = TeacherSubject::create([
@@ -18,9 +20,10 @@ class TeacherSubjectController extends Controller
             'academic_year_id' => $request->academic_year_id,
         ]);
 
-        return response()->json([
-            'message' => 'Teacher assigned successfully',
-            'data' => $teacherSubject,
-        ], 201);
+        return $this->successResponse(
+            $teacherSubject,
+            'Teacher assigned successfully',
+            201
+        );
     }
 }

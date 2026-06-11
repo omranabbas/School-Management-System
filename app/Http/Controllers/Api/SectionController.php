@@ -2,86 +2,109 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Section;
-use Illuminate\Http\Request;
 use App\Models\Grade;
+use App\Models\Section;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreSectionRequest;
+use App\Http\Requests\UpdateSectionRequest;
+use App\Http\Resources\SectionResource;
+use App\Traits\ApiResponse;
 class SectionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use ApiResponse;
+
     public function __construct()
     {
         $this->authorizeResource(Section::class, 'section');
     }
+
     public function index()
     {
-        return Section::with('grade')->get();
+        $sections = Section::with('grade')->get();
+
+        return $this->successResponse(
+            SectionResource::collection($sections),
+            'Sections fetched successfully'
+        );
     }
 
-    public function store(Request $request)
+    public function store(StoreSectionRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'grade_id' => 'required|exists:grades,id',
-        ]);
+        $grade = Grade::findOrFail(
+            $request->grade_id
+        );
 
-        $grade = Grade::findOrFail($request->grade_id);
+        if ($grade->supervisor_id !== Auth::id()) {
 
-        if ($grade->supervisor_id !== Auth::user()->id) {
-            return response()->json([
-                'message' => 'You are not allowed to create a section for this grade.',
-            ], 403);
+            return $this->errorResponse(
+                'You are not allowed to create a section for this grade.',
+                403
+            );
+
         }
 
-        $section = Section::create([
-            'name' => $request->name,
-            'grade_id' => $request->grade_id
-        ]);
+        $section = Section::create(
+            $request->validated()
+        );
 
-        return response()->json([
-            'message' => 'Section created successfully',
-            'data' => $section,
-        ], 201);
+        return $this->successResponse(
+            new SectionResource(
+                $section->load('grade')
+            ),
+            'Section created successfully',
+            201
+        );
     }
 
     public function show(Section $section)
     {
-        return $section->load('grade');
+        return $this->successResponse(
+            new SectionResource(
+                $section->load('grade')
+            ),
+            'Section fetched successfully'
+        );
     }
 
-    public function update(Request $request, Section $section)
-    {
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'grade_id' => 'sometimes|exists:grades,id',
-        ]);
-        if ($request->grade_id) {
-            $grade = Grade::findOrFail($validated['grade_id']);
-              if ($grade->supervisor_id !== Auth::user()->id) {
-            return response()->json([
-                'message' => 'You are not allowed to create a section for this grade.',
-            ], 403);
+    public function update(
+        UpdateSectionRequest $request,
+        Section $section
+    ) {
+        $validated = $request->validated();
+
+        if (isset($validated['grade_id'])) {
+
+            $grade = Grade::findOrFail(
+                $validated['grade_id']
+            );
+
+            if ($grade->supervisor_id !== Auth::id()) {
+
+                return $this->errorResponse(
+                    'You are not allowed to move this section to that grade.',
+                    403
+                );
+            }
         }
-        }
-      
+
         $section->update($validated);
 
-        return response()->json([
-            'message' => 'Section updated successfully',
-            'data' => $section,
-        ]);
+        return $this->successResponse(
+            new SectionResource(
+                $section->load('grade')
+            ),
+            'Section updated successfully'
+        );
     }
 
     public function destroy(Section $section)
     {
         $section->delete();
 
-        return response()->json([
-            'message' => 'Section deleted successfully',
-        ]);
+        return $this->successResponse(
+            null,
+            'Section deleted successfully'
+        );
     }
 }
