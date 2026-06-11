@@ -48,7 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ) {
             return response()->json([
                 'success' => false,
-                'message' => 'Route not found',
+                'message' => 'not found',
             ], 404);
         });
     })->create();

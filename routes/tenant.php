@@ -31,9 +31,10 @@ Route::middleware([
 // Auth
 Route::post('/register', RegisterController::class);
 Route::post('/login', LoginController::class);
-
+Route::get('/test', function () {
+    return 'working';
+});
 Route::middleware('auth:sanctum')->group(function () {
-
 
 
 Route::apiResource('user',UserController::class);
@@ -42,16 +43,7 @@ Route::apiResource('section',SectionController::class);
 Route::apiResource('student-profile',StudentProfileController::class);
 Route::apiResource('teacher-profile',TeacherProfileController::class);
 
-        Route::middleware('role:supervisor')->group(function () {
-        
-            // Teacher Assignments
 
-            Route::post(
-                '/teacher-subjects',
-                [TeacherSubjectController::class, 'store']
-            );
-
-        });
 
 
 
@@ -65,17 +57,17 @@ Route::apiResource('teacher-profile',TeacherProfileController::class);
 
         Route::middleware('role:supervisor')->group(function () {
 
-            // Grades 
-            Route::apiResource(
-                'grades',
-                GradeController::class
-            );
+            // // Grades 
+            // Route::apiResource(
+            //     'grades',
+            //     GradeController::class
+            // );
 
-            // Sections
-            Route::apiResource(
-                'sections',
-                SectionController::class
-            );
+            // // Sections
+            // Route::apiResource(
+            //     'sections',
+            //     SectionController::class
+            // );
 
             // Enrollments
             Route::post(
