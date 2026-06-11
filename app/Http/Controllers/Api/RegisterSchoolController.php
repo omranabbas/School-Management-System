@@ -9,9 +9,6 @@ use App\Models\Tenant;
 class RegisterSchoolController extends Controller
 {
     public function create(RegisterSchoolRequest $request) {
-        // $result = $tenantService->register(
-        //     $request->validated()
-        // );
         $tenant = Tenant::create([
             'name' => $request->school_name
         ]);

@@ -45,7 +45,7 @@ class SectionsRelationManager extends RelationManager
                     ->searchable(),
 
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date()
                     ->icon(Heroicon::Calendar)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -52,7 +52,7 @@ class SubjectsRelationManager extends RelationManager
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date()
                     ->sortable()
                     ->icon(Heroicon::Calendar)
                     ->toggleable(isToggledHiddenByDefault: true),

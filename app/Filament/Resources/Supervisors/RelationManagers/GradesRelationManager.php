@@ -26,6 +26,7 @@ class GradesRelationManager extends RelationManager
             ->components([
                 TextInput::make('name')
                     ->required()
+                    ->unique(ignoreRecord:true)
                     ->maxLength(255),
             ]);
     }
@@ -47,7 +48,7 @@ class GradesRelationManager extends RelationManager
                     ->searchable(),
 
                     TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date()
                     ->icon(Heroicon::Calendar)
                     ->sortable(),
             ])

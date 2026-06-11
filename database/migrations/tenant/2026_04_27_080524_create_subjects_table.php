@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('grade_id')->constrained('grades')->restrictOnDelete();
             $table->timestamps();
+            $table->unique(['name','grade_id']);
         });
     }
 

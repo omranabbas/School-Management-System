@@ -30,7 +30,7 @@ class GradesTable
                         'preparatory' => 'info',
                         'secondary' => 'danger',
                     })
-                    ->sortable(),
+                    ,
 
                 TextColumn::make('supervisor.name')
                     ->label('Supervisor')
@@ -38,7 +38,7 @@ class GradesTable
                     ->sortable(),
 
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date()
                     ->sortable()
                     ->icon(Heroicon::Calendar)
                     ->toggleable(isToggledHiddenByDefault: true),

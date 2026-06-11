@@ -12,9 +12,9 @@ class RegisterController extends Controller
     public function __invoke(Request $request)
     {
         $data = $request->validate([
-            'name' => ['required'],
-            'last_name' => ['required'],
-            'father_name' => ['required'],
+            'name' => ['required','string'],
+            'last_name' => ['required','string'],
+            'father_name' => ['required','string'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => [
                 'required',
@@ -25,7 +25,7 @@ class RegisterController extends Controller
                 'regex:/[@$!%*#?&]/',
                 'not_regex:/\s/',
             ],
-            'date_of_birth' => ['required', 'date'],
+            'date_of_birth' => ['required', 'date']
         ]);
 
         $user = User::create([
@@ -33,16 +33,14 @@ class RegisterController extends Controller
             'last_name' => $data['last_name'],
             'father_name' => $data['father_name'],
             'email' => $data['email'],
-            'role' => 'admin',
+            'role' => "admin",
             'password' => Hash::make($data['password']),
             'date_of_birth' => $data['date_of_birth'],
         ]);
 
-        // $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Admin registered successfully',
-            // 'token' => $token,
             'user' => $user,
         ], 201);
     }

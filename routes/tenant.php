@@ -16,6 +16,9 @@ use App\Http\Controllers\Api\MarkController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\SectionController;
+use App\Http\Controllers\Api\StudentProfileController;
+use App\Http\Controllers\Api\TeacherProfileController;
+use App\Http\Controllers\Api\UserController;
 
 Route::middleware([
     'api',
@@ -23,15 +26,19 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->prefix('api')->group(function () {
 
-    // Auth
+// Auth
+Route::post('/register', RegisterController::class);
+Route::post('/login', LoginController::class);
+Route::middleware('auth:sanctum')->group(function () {
 
-    Route::post('/register', RegisterController::class);
-    Route::post('/login', LoginController::class);
-    Route::middleware('auth:sanctum')->group(function () {
 
+Route::apiResource('user',UserController::class);
 Route::apiResource('grade',GradeController::class);
 Route::apiResource('section',SectionController::class);
-        Route::middleware('role:admin')->group(function () {
+Route::apiResource('student-profile',StudentProfileController::class);
+Route::apiResource('teacher-profile',TeacherProfileController::class);
+
+        Route::middleware('role:supervisor')->group(function () {
         
             // Teacher Assignments
 
@@ -42,7 +49,7 @@ Route::apiResource('section',SectionController::class);
 
         });
 
-        Route::middleware('role:admin,supervisor')->group(function () {
+        Route::middleware('role:supervisor')->group(function () {
 
             // Student Enrollment
 

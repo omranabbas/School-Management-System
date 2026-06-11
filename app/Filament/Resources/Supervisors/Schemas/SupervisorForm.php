@@ -8,9 +8,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\DB;
 
 class SupervisorForm
 {

@@ -18,6 +18,7 @@ class GradeForm
                     TextInput::make('name')
                         ->label('Grade Name')
                         ->required()
+                        ->unique(ignoreRecord:true)
                         ->maxLength(255),
 
                     Select::make('supervisor_id')

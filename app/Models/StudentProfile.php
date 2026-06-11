@@ -20,4 +20,15 @@ class StudentProfile extends Model
     {
         return $this->belongsTo(User::class, 'student_id');
     }
+
+    protected $appends = [
+        'personal_image_url',
+    ];
+
+    public function getPersonalImageUrlAttribute()
+    {
+        return $this->personal_image
+            ? asset('storage/' . $this->personal_image)
+            : null;
+    }
 }

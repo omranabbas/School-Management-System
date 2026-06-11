@@ -19,4 +19,16 @@ class TeacherProfile extends Model
     {
         return $this->belongsTo(User::class, 'teacher_id');
     }
+
+     protected $appends = [
+        'certificate_image_url',
+    ];
+
+
+    public function getCertificateImageUrlAttribute()
+    {
+        return $this->certificate_image
+            ? asset('storage/' . $this->certificate_image)
+            : null;
+    }
 }

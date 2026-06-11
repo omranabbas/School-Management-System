@@ -21,10 +21,10 @@ class StoreEnrollmentRequest extends FormRequest
                 Rule::exists('users', 'id'),
             ],
 
-            'grade_id' => [
-                'required',
-                Rule::exists('grades', 'id'),
-            ],
+            // 'grade_id' => [
+            //     'required',
+            //     Rule::exists('grades', 'id'),
+            // ],
 
             'section_id' => [
                 'required',
@@ -36,10 +36,10 @@ class StoreEnrollmentRequest extends FormRequest
                 Rule::exists('academic_years', 'id'),
             ],
 
-            'enrollment_date' => [
-                'required',
-                'date',
-            ],
+            // 'enrollment_date' => [
+            //     'required',
+            //     'date',
+            // ],
 
         ];
     }

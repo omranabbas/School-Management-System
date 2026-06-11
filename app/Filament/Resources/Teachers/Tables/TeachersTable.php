@@ -44,10 +44,9 @@ class TeachersTable
 
                 TextColumn::make('created_at')
                     ->label('Created At')
-                    ->dateTime()
+                    ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
             ])
             ->filters([
                 TrashedFilter::make(),

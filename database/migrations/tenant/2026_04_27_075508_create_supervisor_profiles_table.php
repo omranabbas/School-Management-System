@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('supervisor_id')->unique()->constrained('users')->cascadeOnDelete();
             $table->integer('years_experience');
-            $table->string('certificate_image')->nullable();
+            // $table->string('certificate_image')->nullable();
             $table->enum('stage',['primary','preparatory','secondary'])->unique();
             $table->timestamps();
         });
