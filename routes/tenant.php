@@ -31,9 +31,7 @@ Route::middleware([
 // Auth
 Route::post('/register', RegisterController::class);
 Route::post('/login', LoginController::class);
-Route::get('/test', function () {
-    return 'working';
-});
+
 Route::middleware('auth:sanctum')->group(function () {
 
 

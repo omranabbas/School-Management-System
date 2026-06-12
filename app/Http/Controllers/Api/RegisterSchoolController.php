@@ -9,6 +9,9 @@ use App\Models\Tenant;
 class RegisterSchoolController extends Controller
 {
     public function create(RegisterSchoolRequest $request) {
+        // $result = $tenantService->register(
+        //     $request->validated()
+        // );
         $tenant = Tenant::create([
             'name' => $request->school_name
         ]);
@@ -24,6 +27,24 @@ class RegisterSchoolController extends Controller
             ],
         ], 201);
     }
+
+
+
+public function index()
+{
+    $tenants = Tenant::with('domains')->get();
+    return response()->json([
+        'message' => 'Schools retrieved successfully',
+        'data' => $tenants->map(function ($tenant) {
+            return [
+                'id' => $tenant->id,
+                'name' => $tenant->name,
+                'domain' => $tenant->domains->first()->domain ?? null,
+                'created_at' => $tenant->created_at,
+            ];
+        })
+    ], 200);
+}
 
     public function show(Tenant $tenant)
     {

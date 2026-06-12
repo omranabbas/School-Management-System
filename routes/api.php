@@ -6,4 +6,5 @@ use App\Http\Controllers\Api\RegisterSchoolController;
 
 Route::post('/schools', [RegisterSchoolController::class,'create']);
 Route::get('/schools/find/{tenant}',[RegisterSchoolController::class,'show']);
+Route::get('/schools', [RegisterSchoolController::class,'index']);
 
