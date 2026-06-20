@@ -31,7 +31,7 @@ class AcademicYearsTable
                 }),
 
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date()
                     ->sortable()
                     ->icon(Heroicon::Calendar)
                     ->toggleable(isToggledHiddenByDefault: true),

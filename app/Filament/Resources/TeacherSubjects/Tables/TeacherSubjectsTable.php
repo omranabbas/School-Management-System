@@ -47,15 +47,16 @@ class TeacherSubjectsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                                 SelectFilter::make('academic_year_id')
+                SelectFilter::make('academic_year_id')
                 ->label('Academic Year')
                 ->relationship('academicYear', 'name')
                 ->searchable()
                 ->preload(),
             ])
             ->recordActions([
+                
+                ViewAction::make(),
                 EditAction::make(),
-                ViewAction::make()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

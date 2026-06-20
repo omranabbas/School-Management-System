@@ -47,20 +47,18 @@ class SectionsRelationManager extends RelationManager
                 TextColumn::make('created_at')
                     ->date()
                     ->icon(Heroicon::Calendar)
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('grade_id')
-                    ->label('Grade')
-                    ->relationship('grade', 'name'),
+
             ])
             ->headerActions([
                 CreateAction::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                
                 ViewAction::make(),
+                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

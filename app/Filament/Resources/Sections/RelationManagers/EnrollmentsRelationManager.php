@@ -67,9 +67,9 @@ class EnrollmentsRelationManager extends RelationManager
                     ->label('Academic Year'),
 
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date()
                     ->icon(Heroicon::Calendar)
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    
             ])
             ->filters([
                 SelectFilter::make('academic_year_id')
@@ -82,8 +82,9 @@ class EnrollmentsRelationManager extends RelationManager
                 CreateAction::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                
                 ViewAction::make(),
+                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

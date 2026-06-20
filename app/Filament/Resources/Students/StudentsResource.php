@@ -7,6 +7,7 @@ use App\Filament\Resources\Students\Pages\EditStudents;
 use App\Filament\Resources\Students\Pages\ListStudents;
 use App\Filament\Resources\Students\Pages\ViewStudents;
 use App\Filament\Resources\Students\RelationManagers\EnrollmentsRelationManager;
+use App\Filament\Resources\Students\RelationManagers\MarksRelationManager;
 use App\Filament\Resources\Students\Schemas\StudentsForm;
 use App\Filament\Resources\Students\Schemas\StudentsInfolist;
 use App\Filament\Resources\Students\Tables\StudentsTable;
@@ -56,7 +57,8 @@ class StudentsResource extends Resource
     public static function getRelations(): array
     {
         return [
-            EnrollmentsRelationManager::class
+            EnrollmentsRelationManager::class,
+            MarksRelationManager::class
         ];
     }
 

@@ -36,6 +36,7 @@ class StudentsTable
                     ->copyable(),
 
                 TextColumn::make('studentProfile.phone')
+                    ->label('Phone')
                     ->searchable()
                     ->copyable()->toggleable(isToggledHiddenByDefault: true),
 

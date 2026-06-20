@@ -33,7 +33,8 @@ class TeachersForm
                                     ->required()
                                     ->unique(ignoreRecord: true),
                                 DatePicker::make('date_of_birth')
-                                    ->required(),
+                                    ->required()
+                                    ->maxDate(now()),
                                 TextInput::make('password')
                                     ->password()->minLength(8)
                                     ->rules([

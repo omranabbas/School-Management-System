@@ -31,7 +31,7 @@ class StudentEnrollmentsTable
                     ->label('Academic Year'),
 
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date()
                     ->icon(Heroicon::Calendar)
                     ->toggleable(isToggledHiddenByDefault: true)
             ])

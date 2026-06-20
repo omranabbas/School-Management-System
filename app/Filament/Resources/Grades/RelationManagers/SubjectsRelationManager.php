@@ -54,18 +54,18 @@ class SubjectsRelationManager extends RelationManager
                 TextColumn::make('created_at')
                     ->date()
                     ->sortable()
-                    ->icon(Heroicon::Calendar)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->icon(Heroicon::Calendar),
             ])
             ->filters([
-                //
+                
             ])
             ->headerActions([
                 CreateAction::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                
                     ViewAction::make(),
+                    EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
