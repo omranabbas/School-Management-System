@@ -10,6 +10,8 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\Auth\ResetPasswordController;
 
 use App\Http\Controllers\Api\TeacherSubjectController;
 use App\Http\Controllers\Api\EnrollmentController;
@@ -28,9 +30,18 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->prefix('api')->group(function () {
 
+Route::get('/reset-password/{token}', function ($token) {
+    return response()->json([
+        'token' => $token,
+    ]);
+})->name('password.reset');
+
 // Auth
 Route::post('/register', RegisterController::class);
 Route::post('/login', LoginController::class);
+Route::post('/logout',LogoutController::class);
+Route::post('/forgot-password',ForgotPasswordController::class);
+Route::post('/reset-password',ResetPasswordController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -46,10 +57,7 @@ Route::apiResource('teacher-profile',TeacherProfileController::class);
 
 
         // Logout
-        Route::post(
-            '/logout',
-            LogoutController::class
-        );
+        
         // Admin and Supervisor routes
 
 

@@ -27,7 +27,7 @@ class AcademicYearStats extends StatsOverviewWidget
                     'academic_year_id',
                     $academicYearId
                 )->count()
-            )->description('Students count in '.AcademicYear::find($academicYearId)->name)
+            )->description('Students count '/* in '.AcademicYear::find($academicYearId)->name */)
                 ->descriptionIcon('heroicon-o-users')
                 ->color('success'),
 
@@ -39,7 +39,7 @@ class AcademicYearStats extends StatsOverviewWidget
                 )
                     ->distinct('teacher_id')
                     ->count('teacher_id')
-            )->description('Teachers count in '.AcademicYear::find($academicYearId)->name)
+            )->description('Teachers count '/*in '.AcademicYear::find($academicYearId)->name*/)
                 ->descriptionIcon('heroicon-o-users')
                 ->color('success'),
         ];
