@@ -21,11 +21,6 @@ class StoreEnrollmentRequest extends FormRequest
                 Rule::exists('users', 'id'),
             ],
 
-            // 'grade_id' => [
-            //     'required',
-            //     Rule::exists('grades', 'id'),
-            // ],
-
             'section_id' => [
                 'required',
                 Rule::exists('sections', 'id'),

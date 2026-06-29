@@ -4,57 +4,49 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterSchoolRequest;
+use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
+use App\Services\TenantService;
+use App\Traits\ApiResponse;
 
 class RegisterSchoolController extends Controller
 {
-    public function create(RegisterSchoolRequest $request) {
-        // $result = $tenantService->register(
-        //     $request->validated()
-        // );
-        $tenant = Tenant::create([
-            'name' => $request->school_name
-        ]);
-        $domain = $tenant->domains()->create([
-            'domain' => $tenant->id . ".localhost"
-        ]);
-        return response()->json([
-            'message' => 'School created successfully',
-            'domain' => $domain->domain,
-            'tenant' => [
-                'id' => $tenant->id,
-                'name' => $tenant->name,
-            ],
-        ], 201);
+    use ApiResponse;
+
+    public function create(
+        RegisterSchoolRequest $request,
+        TenantService $tenantService
+    ) {
+        $result = $tenantService->register(
+            $request->validated()
+        );
+
+        return $this->successResponse(
+            new TenantResource(
+                $result['tenant']->load('domains')
+            ),
+            'School created successfully',
+            201
+        );
     }
 
+    public function index()
+    {
+        $tenants = Tenant::with('domains')->get();
 
-
-public function index()
-{
-    $tenants = Tenant::with('domains')->get();
-    return response()->json([
-        'message' => 'Schools retrieved successfully',
-        'data' => $tenants->map(function ($tenant) {
-            return [
-                'id' => $tenant->id,
-                'name' => $tenant->name,
-                'domain' => $tenant->domains->first()->domain ?? null,
-                'created_at' => $tenant->created_at,
-            ];
-        })
-    ], 200);
-}
+        return $this->successResponse(
+            TenantResource::collection($tenants),
+            'Schools retrieved successfully'
+        );
+    }
 
     public function show(Tenant $tenant)
     {
-        return response()->json([
-            'message' => 'School find successfully',
-            'domain' => $tenant->domains,
-            'tenant' => [
-                'id' => $tenant->id,
-                'name' => $tenant->name,
-            ],
-        ], 200);
+        return $this->successResponse(
+            new TenantResource(
+                $tenant->load('domains')
+            ),
+            'School retrieved successfully'
+        );
     }
 }

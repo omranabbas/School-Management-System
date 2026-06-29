@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 class UserController extends Controller
@@ -26,27 +28,13 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string'],
-            'last_name' => ['required', 'string'],
-            'father_name' => ['required', 'string'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => [
-                'required',
-                'min:8',
-                'regex:/[a-z]/',
-                'regex:/[A-Z]/',
-                'regex:/[0-9]/',
-                'regex:/[@$!%*#?&]/',
-                'not_regex:/\s/',
-            ],
-            'date_of_birth' => ['required', 'date'],
-            'role' => ['required', 'in:student,teacher']
-        ]);
+        $validated = $request->validated();
 
-        $validated['password'] = Hash::make($validated['password']);
+        $validated['password'] = Hash::make(
+            $validated['password']
+        );
 
         $user = User::create($validated);
 
@@ -64,28 +52,16 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request,User $user)
     {
-        $validated = $request->validate([
-            'name' => ['sometimes', 'string'],
-            'last_name' => ['sometimes', 'string'],
-            'father_name' => ['sometimes', 'string'],
-            'email' => ['sometimes', 'email', Rule::unique('users')->ignore($user->id)],
-            'password' => [
-                'sometimes',
-                'min:8',
-                'regex:/[a-z]/',
-                'regex:/[A-Z]/',
-                'regex:/[0-9]/',
-                'regex:/[@$!%*#?&]/',
-                'not_regex:/\s/',
-            ],
-            'date_of_birth' => ['sometimes', 'date'],
-            'role' => ['sometimes', 'in:student,teacher']
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
+
+            $validated['password'] = Hash::make(
+                $validated['password']
+            );
+
         }
 
         $user->update($validated);

@@ -35,6 +35,7 @@ class StoreAttendanceRequest extends FormRequest
                     'present',
                     'absent',
                     'late',
+                    'excused',
                 ]),
             ],
 
