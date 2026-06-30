@@ -92,4 +92,14 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(TeacherSubject::class, 'teacher_id');
     }
+
+    public function teacherAbsences()
+    {
+        return $this->hasMany(TeacherAbsence::class, 'teacher_id');
+    }
+
+    public function replacementForAbsences()
+    {
+        return $this->hasMany(TeacherAbsence::class, 'replacement_teacher_id');
+    }
 }

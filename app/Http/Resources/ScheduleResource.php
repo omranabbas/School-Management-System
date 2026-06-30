@@ -21,15 +21,27 @@ class ScheduleResource extends JsonResource
 
             'end_time' => $this->end_time,
 
+            'status' => $this->override_status ?? 'scheduled',
+
             'subject' => [
                 'id' => $this->teacherSubject?->subject?->id,
                 'name' => $this->teacherSubject?->subject?->name,
             ],
 
             'teacher' => [
-                'id' => $this->teacherSubject?->teacher?->id,
-                'name' => $this->teacherSubject?->teacher?->name,
+                'id' => $this->display_teacher?->id
+                    ?? $this->teacherSubject?->teacher?->id,
+
+                'name' => $this->display_teacher?->name
+                    ?? $this->teacherSubject?->teacher?->name,
             ],
+
+            'replacement_teacher' => $this->replacement_teacher
+                ? [
+                    'id' => $this->replacement_teacher->id,
+                    'name' => $this->replacement_teacher->name,
+                ]
+                : null,
 
             'section' => [
                 'id' => $this->teacherSubject?->section?->id,

@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\StudentProfileController;
 use App\Http\Controllers\Api\TeacherProfileController;
 use App\Http\Controllers\Api\TeacherSubjectController;
+use App\Http\Controllers\Api\TeacherAbsenceController;
 use App\Http\Controllers\Api\UserController;
 
 Route::middleware([
@@ -87,6 +88,12 @@ Route::middleware([
                     'supervisorAttendances'
                 );
             });
+
+            Route::patch(
+                'teacher-absences/{teacherAbsence}/status',
+                [TeacherAbsenceController::class, 'updateStatus']
+            );
+
         });
 
         // Teacher routes
@@ -104,6 +111,12 @@ Route::middleware([
 
             Route::controller(ScheduleController::class)->group(function () {
                 Route::get('/teacher-schedules', 'teacherSchedule');
+            });
+
+            Route::middleware('auth:sanctum')->group(function () {
+
+                Route::apiResource('teacher-absences', TeacherAbsenceController::class);
+
             });
         });
 
