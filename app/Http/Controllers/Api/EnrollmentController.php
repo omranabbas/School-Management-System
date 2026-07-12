@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreEnrollmentRequest;
-use App\Models\StudentEnrollment;
 use App\Traits\ApiResponse;
+use App\Http\Controllers\Controller;
+use App\Models\StudentEnrollment;
+use App\Http\Requests\StoreEnrollmentRequest;
+use App\Http\Resources\EnrollmentResource;
 
 class EnrollmentController extends Controller
 {
@@ -17,8 +18,14 @@ class EnrollmentController extends Controller
             $request->validated()
         );
 
+        $enrollment->load([
+            'student',
+            'section.grade',
+            'academicYear',
+        ]);
+
         return $this->successResponse(
-            $enrollment,
+            new EnrollmentResource($enrollment),
             'Student enrolled successfully',
             201
         );

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Traits\ApiResponse;
 use App\Models\Schedule;
 use App\Models\StudentEnrollment;
+use App\Services\ScheduleService;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreScheduleRequest;
@@ -68,10 +69,13 @@ class ScheduleController extends Controller
         );
     }
 
-    public function teacherSchedule()
+    public function teacherSchedule(ScheduleService $scheduleService)
     {
-        
         $teacherId = Auth::id();
+
+        $date = request('date', now()->toDateString());
+
+        $day = $scheduleService->dayFromDate($date);
 
         $schedules = Schedule::with([
             'teacherSubject.subject',
@@ -81,18 +85,11 @@ class ScheduleController extends Controller
             ->whereHas('teacherSubject', function ($query) use ($teacherId) {
                 $query->where('teacher_id', $teacherId);
             })
-            ->orderByRaw("
-                FIELD(
-                    day,
-                    'sunday',
-                    'monday',
-                    'tuesday',
-                    'wednesday',
-                    'thursday'
-                )
-            ")
+            ->where('day', $day)
             ->orderBy('period')
             ->get();
+
+        $schedules = $scheduleService->applyOverrides($schedules, $date);
 
         return $this->successResponse(
             ScheduleResource::collection($schedules),
@@ -100,9 +97,13 @@ class ScheduleController extends Controller
         );
     }
 
-    public function studentSchedule()
+    public function studentSchedule(ScheduleService $scheduleService)
     {
         $studentId = Auth::id();
+
+        $date = request('date', now()->toDateString());
+
+        $day = $scheduleService->dayFromDate($date);
 
         $enrollment = StudentEnrollment::where(
             'student_id',
@@ -128,28 +129,25 @@ class ScheduleController extends Controller
             ->whereHas('teacherSubject', function ($query) use ($sectionId) {
                 $query->where('section_id', $sectionId);
             })
-            ->orderByRaw("
-                FIELD(
-                    day,
-                    'sunday',
-                    'monday',
-                    'tuesday',
-                    'wednesday',
-                    'thursday'
-                )
-            ")
+            ->where('day', $day)
             ->orderBy('period')
             ->get();
+
+        $schedules = $scheduleService->applyOverrides($schedules, $date);
 
         return $this->successResponse(
             ScheduleResource::collection($schedules),
             'Schedules fetched successfully'
-        );    
+        );
     }
 
-    public function supervisorSchedule()
+    public function supervisorSchedule(ScheduleService $scheduleService)
     {
         $supervisorId = Auth::id();
+
+        $date = request('date', now()->toDateString());
+
+        $day = $scheduleService->dayFromDate($date);
 
         $schedules = Schedule::with([
             'teacherSubject.subject',
@@ -165,22 +163,15 @@ class ScheduleController extends Controller
                     );
                 }
             )
-            ->orderByRaw("
-                FIELD(
-                    day,
-                    'sunday',
-                    'monday',
-                    'tuesday',
-                    'wednesday',
-                    'thursday'
-                )
-            ")
+            ->where('day', $day)
             ->orderBy('period')
             ->get();
+
+        $schedules = $scheduleService->applyOverrides($schedules, $date);
 
         return $this->successResponse(
             ScheduleResource::collection($schedules),
             'Schedules fetched successfully'
-        );    
+        );
     }
 }

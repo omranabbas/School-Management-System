@@ -13,19 +13,19 @@ use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 class Dashboard extends BaseDashboard
 {
     use HasFiltersForm;
-       public function getHeaderWidgets(): array
-    {
-        return [
-            GradesSectionsStats::class, 
-        ];
-    }
+//        public function getHeaderWidgets(): array
+//     {
+//         return [
+//             GradesSectionsStats::class, 
+//         ];
+//     }
 
-    public function getFooterWidgets(): array
-{
-    return [
-        AcademicYearStats::class,
-    ];
-}
+//     public function getFooterWidgets(): array
+// {
+//     return [
+//         AcademicYearStats::class,
+//     ];
+// }
     public function filtersForm(Schema $schema): Schema
     {
         return $schema->components([

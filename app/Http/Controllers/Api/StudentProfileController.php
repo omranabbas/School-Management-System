@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Traits\ApiResponse;
 use App\Models\StudentProfile;
 use Illuminate\Support\Facades\Storage;
-use App\Models\User;
-
+use App\Http\Controllers\Controller;
+use App\Http\Resources\StudentProfileResource;
+use App\Http\Requests\StoreStudentProfileRequest;
+use App\Http\Requests\UpdateStudentProfileRequest;
 
 class StudentProfileController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use ApiResponse;
+
     public function __construct()
     {
         $this->middleware('role:supervisor')
@@ -22,55 +23,59 @@ class StudentProfileController extends Controller
 
     public function index()
     {
-        return StudentProfile::with('student')->get();
+        $profiles = StudentProfile::with('student')->get();
+
+        return $this->successResponse(
+            StudentProfileResource::collection($profiles),
+            'Student profiles fetched successfully'
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-
-    public function store(Request $request)
+    public function store(StoreStudentProfileRequest $request)
     {
+        $validated = $request->validated();
 
-        $validated = $request->validate([
-            'student_id' => ['required', 'exists:users,id', 'unique:student_profiles,student_id'],
-            'phone' => ['required', 'string'],
-            'parent_phone' => ['required', 'string'],
-            'personal_image' => ['required', 'image'],
-        ]);
-        if (User::find($request->student_id)->role !== 'student') {
-            return response()->json([
-                'message' => 'Selected user is not a student.'
-            ], 422);
+        if (User::find($validated['student_id'])->role !== 'student') {
+            return $this->errorResponse(
+                'Selected user is not a student.',
+                422
+            );
         }
 
         if ($request->hasFile('personal_image')) {
-            $validated['personal_image'] =
-                $request->file('personal_image')->store("tenants/" . tenant()->id . "/students/personal_images", 'public');
+            $validated['personal_image'] = $request->file('personal_image')
+                ->store(
+                    'tenants/' . tenant()->id . '/students/personal_images',
+                    'public'
+                );
         }
 
         $profile = StudentProfile::create($validated);
 
-        return response()->json($profile, 201);
+        return $this->successResponse(
+            new StudentProfileResource(
+                $profile->load('student')
+            ),
+            'Student profile created successfully',
+            201
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(StudentProfile $studentProfile)
     {
-        return $studentProfile->load('student');
+        return $this->successResponse(
+            new StudentProfileResource(
+                $studentProfile->load('student')
+            ),
+            'Student profile fetched successfully'
+        );
     }
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, StudentProfile $studentProfile)
-    {
-        $validated = $request->validate([
-            'phone' => ['sometimes', 'string'],
-            'parent_phone' => ['sometimes', 'string'],
-            'personal_image' => ['sometimes', 'image'],
-        ]);
+
+    public function update(
+        UpdateStudentProfileRequest $request,
+        StudentProfile $studentProfile
+    ) {
+        $validated = $request->validated();
 
         if ($request->hasFile('personal_image')) {
 
@@ -79,17 +84,35 @@ class StudentProfileController extends Controller
                     ->delete($studentProfile->personal_image);
             }
 
-            $validated['personal_image'] =
-                $request->file('personal_image')->store("tenants/" . tenant()->id . "/students", 'public');
+            $validated['personal_image'] = $request->file('personal_image')
+                ->store(
+                    'tenants/' . tenant()->id . '/students/personal_images',
+                    'public'
+                );
         }
 
         $studentProfile->update($validated);
 
-        return response()->json($studentProfile);
+        return $this->successResponse(
+            new StudentProfileResource(
+                $studentProfile->fresh()->load('student')
+            ),
+            'Student profile updated successfully'
+        );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(StudentProfile $studentProfile) {}
+    public function destroy(StudentProfile $studentProfile)
+    {
+        if ($studentProfile->personal_image) {
+            Storage::disk('public')
+                ->delete($studentProfile->personal_image);
+        }
+
+        $studentProfile->delete();
+
+        return $this->successResponse(
+            null,
+            'Student profile deleted successfully'
+        );
+    }
 }

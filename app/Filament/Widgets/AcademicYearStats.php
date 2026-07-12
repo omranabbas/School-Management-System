@@ -30,8 +30,12 @@ class AcademicYearStats extends StatsOverviewWidget
                     'academic_year_id',
                     $academicYearId
                 )->count()
+<<<<<<< HEAD
             )
             ->description(  $academicYear?'Students count in ' . $academicYear->name : 'Students count')
+=======
+            )->description('Students count '/* in '.AcademicYear::find($academicYearId)->name */)
+>>>>>>> 2d175bdda271a80461a5b0ef700660d9b2c5332f
                 ->descriptionIcon('heroicon-o-users')
                 ->color('success'),
 
@@ -43,7 +47,11 @@ class AcademicYearStats extends StatsOverviewWidget
                 )
                     ->distinct('teacher_id')
                     ->count('teacher_id')
+<<<<<<< HEAD
             )->description(  $academicYear?'Students count in ' . $academicYear->name : 'Students count')
+=======
+            )->description('Teachers count '/*in '.AcademicYear::find($academicYearId)->name*/)
+>>>>>>> 2d175bdda271a80461a5b0ef700660d9b2c5332f
                 ->descriptionIcon('heroicon-o-users')
                 ->color('success'),
         ];

@@ -3,34 +3,41 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\LoginRequest;
 use App\Models\User;
+use App\Traits\ApiResponse;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function __invoke(Request $request)
+    use ApiResponse;
+
+    public function __invoke(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-        
-        if (!Auth::attempt($credentials)) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
+        $credentials = $request->validated();
+
+        if (! Auth::attempt($credentials)) {
+
+            return $this->errorResponse(
+                'Invalid credentials',
+                401
+            );
+
         }
 
         /** @var User $user */
-        $user = User::where('email', $request->email)->first();
+        $user = Auth::user();
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken(
+            'auth-token'
+        )->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-            'user' => $user,
-        ]);
+        return $this->successResponse(
+            [
+                'token' => $token,
+                'user' => $user,
+            ],
+            'Login successful'
+        );
     }
 }
