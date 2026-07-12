@@ -18,11 +18,20 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        return User::latest()->paginate(15);
-    }
+public function index()
+{
+    $users = User::latest()->paginate(15);
 
+    $users->getCollection()->each(function ($user) {
+        if ($user->role === 'student') {
+            $user->load('studentProfile');
+        } elseif ($user->role === 'teacher') {
+            $user->load('teacherProfile');
+        }
+    });
+
+    return $users;
+}
     /**
      * Store a newly created resource in storage.
      */
@@ -56,10 +65,16 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
-    {
-        return response()->json($user);
+   public function show(User $user)
+{
+    if ($user->role === 'student') {
+        $user->load('studentProfile');
+    } elseif ($user->role === 'teacher') {
+        $user->load('teacherProfile');
     }
+
+    return response()->json($user);
+}
 
     /**
      * Update the specified resource in storage.
