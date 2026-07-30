@@ -36,13 +36,13 @@ class GradeController extends Controller
             );
 
 
-         $request->validate([
-            'name' => 'required|string|unique:grades,name',
-        ]);
+        //  $request->validate([
+        //     'name' => 'required|string|unique:grades,name',
+        // ]);
 
-        $grade = Auth::user()->supervisedGrades()->create([
-            'name' => $request->name,
-        ]);
+        // $grade = Auth::user()->supervisedGrades()->create([
+        //     'name' => $request->name,
+        // ]);
 
    
             return $this->successResponse(
