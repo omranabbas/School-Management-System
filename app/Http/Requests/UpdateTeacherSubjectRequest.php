@@ -6,10 +6,11 @@ use App\Models\User;
 use App\Models\Subject;
 use App\Models\Section;
 use App\Models\AcademicYear;
+use App\Models\TeacherSubject;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTeacherSubjectRequest extends FormRequest
+class UpdateTeacherSubjectRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -39,19 +40,22 @@ class StoreTeacherSubjectRequest extends FormRequest
                 'required',
                 Rule::exists(AcademicYear::class, 'id'),
             ],
+
         ];
     }
-    
+
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
 
-            $exists = \App\Models\TeacherSubject::where([
+            $exists = TeacherSubject::where([
                 'teacher_id' => $this->teacher_id,
                 'subject_id' => $this->subject_id,
                 'section_id' => $this->section_id,
                 'academic_year_id' => $this->academic_year_id,
-            ])->exists();
+            ])
+            ->where('id', '!=', $this->teacherSubject->id)
+            ->exists();
 
             if ($exists) {
                 $validator->errors()->add(
