@@ -14,7 +14,7 @@ class MarkPolicy
 
     public function view(User $user, Mark $mark): bool
     {
-        if ($user->role === 'admin') {
+        if ($user->role === 'admin' || $user->role === 'supervisor') {
             return true;
         }
 
@@ -41,6 +41,7 @@ class MarkPolicy
 
     public function delete(User $user, Mark $mark): bool
     {
-        return $user->role === 'admin';
+          return $user->role === 'teacher'
+            && $mark->teacherSubject->teacher_id === $user->id;
     }
 }

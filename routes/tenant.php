@@ -64,33 +64,45 @@ Route::middleware([
             $academicYears = AcademicYear::orderByDesc('name')->get();
 
             return response(
-                $academicYears,200,[
-                'Academic years fetched successfully']
+                $academicYears,
+                200,
+                [
+                    'Academic years fetched successfully'
+                ]
             );
         });
         // Supervisor routes
-        Route::apiResource('/enrollments',StudentEnrollmentController::class);
+        Route::apiResource('/enrollments', StudentEnrollmentController::class);
 
-              Route::controller(AttendanceController::class)->group(function () {
-                Route::post('/attendances', 'store');
-                Route::put('/attendances/{attendance}', 'update');
-                Route::delete('/attendances/{attendance}', 'destroy');
-                   Route::get(
-                    '/attendances/{studentId}',
-                    'studentAttendancesById'
-                );
-                Route::get(
-                    '/attendances',
-                    'studentAttendances'
-                );
-                Route::get(
-                    '/supervisor-attendances',
-                    'supervisorAttendances'
-                );
-            });
-            Route::apiResource('subjects', SubjectController::class);
-            Route::apiResource('/teacher-subject',TeacherSubjectController::class);
+        Route::controller(AttendanceController::class)->group(function () {
+            Route::post('/attendances', 'store');
+            Route::put('/attendances/{attendance}', 'update');
+            Route::delete('/attendances/{attendance}', 'destroy');
+            Route::get(
+                '/attendances/{studentId}',
+                'studentAttendancesById'
+            );
+            Route::get(
+                '/attendances',
+                'studentAttendances'
+            );
+            Route::get(
+                '/supervisor-attendances',
+                'supervisorAttendances'
+            );
+        });
+        Route::apiResource('subjects', SubjectController::class);
+        Route::apiResource('/teacher-subject', TeacherSubjectController::class);
+        Route::controller(MarkController::class)->group(function () {
+            Route::post('/marks', 'store');
+            Route::get('/mark/{mark}', 'show');
+            Route::get('/marks', 'studentMarks');
+            Route::get('/marks/{studentId}', 'studentMarksById');
+            Route::put('/marks/{mark}', 'update');
+            Route::delete('/marks/{mark}', 'destroy');
 
+            Route::get('/teacher-marks', 'teacherMarks');
+        });
         Route::middleware('role:supervisor')->group(function () {
 
             // Route::controller(EnrollmentController::class)->group(function () {
@@ -113,7 +125,7 @@ Route::middleware([
             });
 
 
-            
+
 
             Route::controller(AttendanceController::class)->group(function () {
                 Route::post('/attendances', 'store');
