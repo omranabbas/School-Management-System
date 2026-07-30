@@ -10,6 +10,8 @@ use App\Http\Requests\StoreSectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
 use App\Http\Resources\SectionResource;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
+
 class SectionController extends Controller
 {
     use ApiResponse;
@@ -19,15 +21,21 @@ class SectionController extends Controller
         $this->authorizeResource(Section::class, 'section');
     }
 
-    public function index()
-    {
-        $sections = Section::with('grade')->get();
+public function index(Request $request)
+{
+    $query = Section::with('grade');
 
-        return $this->successResponse(
-            SectionResource::collection($sections),
-            'Sections fetched successfully'
-        );
+    if ($request->filled('grade_id')) {
+        $query->where('grade_id', $request->grade_id);
     }
+
+    $sections = $query->get();
+
+    return $this->successResponse(
+        SectionResource::collection($sections),
+        'Sections fetched successfully'
+    );
+}
 
     public function store(StoreSectionRequest $request)
     {

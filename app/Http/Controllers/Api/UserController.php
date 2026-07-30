@@ -20,9 +20,15 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-public function index()
+public function index(Request $request)
 {
-    $users = User::latest()->paginate(15);
+    $query = User::query();
+
+    if ($request->filled('role')) {
+        $query->where('role', $request->role);
+    }
+
+    $users = $query->latest()->paginate(15);
 
     $users->getCollection()->each(function ($user) {
         if ($user->role === 'student') {

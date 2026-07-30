@@ -31,12 +31,7 @@ class StoreAttendanceRequest extends FormRequest
 
             'status' => [
                 'required',
-                Rule::in([
-                    'present',
-                    'absent',
-                    'late',
-                    'excused',
-                ]),
+                Rule::in( ['absent', 'present', 'late']),
             ],
 
         ];

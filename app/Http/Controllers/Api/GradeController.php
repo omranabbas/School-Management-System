@@ -9,6 +9,7 @@ use App\Http\Resources\GradeResource;
 use App\Traits\ApiResponse;
 use App\Http\Requests\StoreGradeRequest;
 use App\Http\Requests\UpdateGradeRequest;
+use Illuminate\Http\Request;
 
 class GradeController extends Controller
 {
@@ -19,15 +20,22 @@ class GradeController extends Controller
         $this->authorizeResource(Grade::class, 'grade');
     }
 
-    public function index()
-    {
-        $grades = Grade::with('supervisor')->get();
+public function index(Request $request)
+{
+    $grades = Grade::with(['supervisor.supervisorProfile'])
+        ->when($request->filled('stage'), function ($query) use ($request) {
+            $query->whereHas(
+                'supervisor.supervisorProfile',
+                fn ($q) => $q->where('stage', $request->stage)
+            );
+        })
+        ->get();
 
-        return $this->successResponse(
-            GradeResource::collection($grades),
-            'Grades fetched successfully'
-        );
-    }
+    return $this->successResponse(
+        GradeResource::collection($grades),
+        'Grades fetched successfully'
+    );
+}
 
     public function store(StoreGradeRequest $request)
     {

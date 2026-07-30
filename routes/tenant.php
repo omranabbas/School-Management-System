@@ -14,16 +14,19 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 
 use App\Http\Controllers\Api\AttendanceController;
-use App\Http\Controllers\Api\EnrollmentController;
+
 use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\MarkController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\SectionController;
+use App\Http\Controllers\Api\EnrollmentController;
+use App\Http\Controllers\Api\StudentEnrollmentController;
 use App\Http\Controllers\Api\StudentProfileController;
 use App\Http\Controllers\Api\TeacherProfileController;
 use App\Http\Controllers\Api\TeacherSubjectController;
 use App\Http\Controllers\Api\TeacherAbsenceController;
 use App\Http\Controllers\Api\UserController;
+use App\Models\AcademicYear;
 
 Route::middleware([
     'api',
@@ -31,37 +34,65 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->prefix('api')->group(function () {
 
-    Route::get('/reset-password/{token}', function ($token) {
-        return response()->json([
-            'token' => $token,
-        ]);
-    })->name('password.reset');
+    // Route::get('/reset-password/{token}', function ($token) {
+    //     return response()->json([
+    //         'token' => $token,
+    //     ]);
+    // })->name('password.reset');
+    // Route::post('/forgot-password', ForgotPasswordController::class);
+    // Route::post('/reset-password', ResetPasswordController::class);
+
 
     // Authentication routes
 
     Route::post('/register', RegisterController::class);
     Route::post('/login', LoginController::class);
-    Route::post('/logout', LogoutController::class);
-    Route::post('/forgot-password', ForgotPasswordController::class);
-    Route::post('/reset-password', ResetPasswordController::class);
+
 
     Route::middleware('auth:sanctum')->group(function () {
 
-       // Resource routes 
+        Route::post('/logout', LogoutController::class);
 
+        // Resource routes 
         Route::apiResource('user', UserController::class);
         Route::apiResource('grade', GradeController::class);
         Route::apiResource('section', SectionController::class);
         Route::apiResource('student-profile', StudentProfileController::class);
         Route::apiResource('teacher-profile', TeacherProfileController::class);
+        Route::get('/academic-years', function () {
+            $academicYears = AcademicYear::orderByDesc('name')->get();
 
+            return response(
+                $academicYears,200,[
+                'Academic years fetched successfully']
+            );
+        });
         // Supervisor routes
+        Route::apiResource('/enrollments',StudentEnrollmentController::class);
+
+              Route::controller(AttendanceController::class)->group(function () {
+                Route::post('/attendances', 'store');
+                Route::put('/attendances/{attendance}', 'update');
+                Route::delete('/attendances/{attendance}', 'destroy');
+                   Route::get(
+                    '/attendances/{studentId}',
+                    'studentAttendancesById'
+                );
+                Route::get(
+                    '/attendances',
+                    'studentAttendances'
+                );
+                Route::get(
+                    '/supervisor-attendances',
+                    'supervisorAttendances'
+                );
+            });
 
         Route::middleware('role:supervisor')->group(function () {
 
-            Route::controller(EnrollmentController::class)->group(function () {
-                Route::post('/enrollments', 'store');
-            });
+            // Route::controller(EnrollmentController::class)->group(function () {
+            //     Route::post('/enrollments', 'store');
+            // });
 
             Route::controller(TeacherSubjectController::class)->group(function () {
                 Route::post('/teacher-subjects', 'store');
@@ -78,22 +109,11 @@ Route::middleware([
                 );
             });
 
-            Route::controller(AttendanceController::class)->group(function () {
-                Route::post('/attendances', 'store');
-                Route::put('/attendances/{attendance}', 'update');
-                Route::delete('/attendances/{attendance}', 'destroy');
-
-                Route::get(
-                    '/supervisor-attendances',
-                    'supervisorAttendances'
-                );
-            });
-
+      
             Route::patch(
                 'teacher-absences/{teacherAbsence}/status',
                 [TeacherAbsenceController::class, 'updateStatus']
             );
-
         });
 
         // Teacher routes
@@ -116,7 +136,6 @@ Route::middleware([
             Route::middleware('auth:sanctum')->group(function () {
 
                 Route::apiResource('teacher-absences', TeacherAbsenceController::class);
-
             });
         });
 

@@ -14,7 +14,7 @@ class AttendancePolicy
 
     public function view(User $user, Attendance $attendance): bool
     {
-        if ($user->role === 'admin') {
+        if ($user->role === 'admin' || $user->role === 'supervisor') {
             return true;
         }
 
@@ -28,11 +28,11 @@ class AttendancePolicy
     }
     public function update(User $user, Attendance $attendance): bool
     {
-        return $user->role === 'supervisor';
+                return $user->role === 'supervisor' && $attendance->enrollment->section->grade->supervisor_id=== $user->id;
     }
 
     public function delete(User $user, Attendance $attendance): bool
     {
-        return $user->role === 'supervisor';
+        return $user->role === 'supervisor' && $attendance->enrollment->section->grade->supervisor_id== $user->id;
     }
 }

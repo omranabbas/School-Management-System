@@ -26,7 +26,7 @@ class UpdateAttendanceRequest extends FormRequest
 
             'status' => [
                 'sometimes',
-                'in:present,absent,late,excused',
+                'in:present,absent,late',
             ],
         ];
     }
