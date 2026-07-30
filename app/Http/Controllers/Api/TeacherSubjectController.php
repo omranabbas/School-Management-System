@@ -10,6 +10,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeacherSubjectRequest;
 use App\Http\Requests\UpdateTeacherSubjectRequest;
 use App\Http\Resources\TeacherSubjectResource;
+use App\Models\Section;
+use App\Models\Subject;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherSubjectController extends Controller
 {
@@ -17,7 +20,7 @@ class TeacherSubjectController extends Controller
 
     public function __construct()
     {
-        $this->authorizeResource(TeacherSubject::class, 'teacherSubject');
+        $this->authorizeResource(TeacherSubject::class, 'teacher_subject');
     }
 
     public function index(Request $request)
@@ -38,10 +41,9 @@ class TeacherSubjectController extends Controller
                 $q->whereHas('teacher', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
-                ->orWhereHas('subject', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
-
+                    ->orWhereHas('subject', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -75,9 +77,7 @@ class TeacherSubjectController extends Controller
                         'grade_id',
                         $request->grade_id
                     );
-
                 });
-
             }
         );
 
@@ -107,7 +107,21 @@ class TeacherSubjectController extends Controller
     }
 
     public function store(StoreTeacherSubjectRequest $request)
-    {
+    {   
+        $subject = Subject::findOrFail($request->subject_id);
+        $section = Section::findOrFail($request->section_id);
+        if ($subject->grade->supervisor_id !== Auth::id() || $section->grade->supervisor_id !== Auth::id()) {
+            return $this->errorResponse(
+                'You are not authorized to assign teachers for this subject.',
+                403
+            );
+        }
+        if ($subject->grade_id !== $section->grade_id) {
+            return $this->errorResponse(
+                'The selected subject does not belong to the selected section.',
+                422
+            );
+        }
         $teacherSubject = TeacherSubject::create(
             $request->validated()
         );
@@ -126,9 +140,9 @@ class TeacherSubjectController extends Controller
         );
     }
 
-    public function show(TeacherSubject $teacherSubject)
+    public function show(TeacherSubject $teacher_subject)
     {
-        $teacherSubject->load([
+        $teacher_subject->load([
             'teacher',
             'subject',
             'section.grade',
@@ -136,51 +150,75 @@ class TeacherSubjectController extends Controller
         ]);
 
         return $this->successResponse(
-            new TeacherSubjectResource($teacherSubject),
+            new TeacherSubjectResource($teacher_subject),
             'Teacher assignment fetched successfully'
         );
     }
 
-    public function update(
-        UpdateTeacherSubjectRequest $request,
-        TeacherSubject $teacherSubject
-    ) {
+   public function update(
+    UpdateTeacherSubjectRequest $request,
+    TeacherSubject $teacher_subject
+) {
+    $subjectId = $request->subject_id ?? $teacher_subject->subject_id;
+    $sectionId = $request->section_id ?? $teacher_subject->section_id;
 
-        $teacherSubject->update(
-            $request->validated()
-        );
+    $subject = Subject::findOrFail($subjectId);
+    $section = Section::findOrFail($sectionId);
 
-        $teacherSubject->load([
-            'teacher',
-            'subject',
-            'section.grade',
-            'academicYear',
-        ]);
-
-        return $this->successResponse(
-            new TeacherSubjectResource($teacherSubject),
-            'Teacher assignment updated successfully'
+    if ($subject->grade_id !== $section->grade_id) {
+        return $this->errorResponse(
+            'The selected subject does not belong to the selected section.',
+            422
         );
     }
 
-    public function destroy(TeacherSubject $teacherSubject)
+    if ($subject->grade->supervisor_id !== Auth::id()) {
+        return $this->errorResponse(
+            'You are not authorized to assign teachers for this subject.',
+            403
+        );
+    }
+
+    if ($section->grade->supervisor_id !== Auth::id()) {
+        return $this->errorResponse(
+            'You are not authorized to assign teachers for this section.',
+            403
+        );
+    }
+
+    $teacher_subject->update(
+        $request->validated()
+    );
+
+    $teacher_subject->load([
+        'teacher',
+        'subject',
+        'section.grade',
+        'academicYear',
+    ]);
+
+    return $this->successResponse(
+        new TeacherSubjectResource($teacher_subject),
+        'Teacher assignment updated successfully'
+    );
+}
+
+    public function destroy(TeacherSubject $teacher_subject)
     {
         try {
 
-            $teacherSubject->delete();
+            $teacher_subject->delete();
 
             return $this->successResponse(
                 null,
                 'Teacher assignment deleted successfully'
             );
-
         } catch (QueryException $e) {
 
             return $this->errorResponse(
                 'Cannot delete this assignment because it is used by other records.',
                 409
             );
-
         }
     }
 }

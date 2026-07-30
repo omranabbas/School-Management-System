@@ -17,7 +17,7 @@ class UpdateSubjectRequest extends FormRequest
         return [
 
             'name' => [
-                'required',
+                'sometimes',
                 'string',
                 'max:255',
                 Rule::unique('subjects')
@@ -26,7 +26,7 @@ class UpdateSubjectRequest extends FormRequest
             ],
 
             'grade_id' => [
-                'required',
+                'sometimes',
                 Rule::exists('grades', 'id'),
             ],
 

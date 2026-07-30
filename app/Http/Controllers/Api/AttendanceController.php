@@ -117,7 +117,7 @@ class AttendanceController extends Controller
             ->where(
                 'enrollment_id',
                 $enrollment->id
-            )
+            )->orderBy('date')
             ->latest()
             ->paginate($perPage);
 
@@ -162,7 +162,7 @@ class AttendanceController extends Controller
             ->where(
                 'enrollment_id',
                 $enrollment->id
-            )
+            )->orderBy('date')
             ->latest()
             ->paginate($perPage);
 

@@ -44,26 +44,26 @@ class UpdateTeacherSubjectRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
+    // public function withValidator($validator)
+    // {
+    //     $validator->after(function ($validator) {
 
-            $exists = TeacherSubject::where([
-                'teacher_id' => $this->teacher_id,
-                'subject_id' => $this->subject_id,
-                'section_id' => $this->section_id,
-                'academic_year_id' => $this->academic_year_id,
-            ])
-            ->where('id', '!=', $this->teacherSubject->id)
-            ->exists();
+    //         $exists = TeacherSubject::where([
+    //             'teacher_id' => $this->teacher_id,
+    //             'subject_id' => $this->subject_id,
+    //             'section_id' => $this->section_id,
+    //             'academic_year_id' => $this->academic_year_id,
+    //         ])
+    //         ->where('id', '!=', $this->teacherSubject->id)
+    //         ->exists();
 
-            if ($exists) {
-                $validator->errors()->add(
-                    'teacher_id',
-                    'This assignment already exists.'
-                );
-            }
+    //         if ($exists) {
+    //             $validator->errors()->add(
+    //                 'teacher_id',
+    //                 'This assignment already exists.'
+    //             );
+    //         }
 
-        });
-    }
+    //     });
+    // }
 }

@@ -88,6 +88,8 @@ Route::middleware([
                     'supervisorAttendances'
                 );
             });
+            Route::apiResource('subjects', SubjectController::class);
+            Route::apiResource('/teacher-subject',TeacherSubjectController::class);
 
         Route::middleware('role:supervisor')->group(function () {
 
@@ -95,9 +97,9 @@ Route::middleware([
             //     Route::post('/enrollments', 'store');
             // });
 
-            Route::controller(TeacherSubjectController::class)->group(function () {
-                Route::post('/teacher-subjects', 'store');
-            });
+            // Route::controller(TeacherSubjectController::class)->group(function () {
+            //     Route::post('/teacher-subjects', 'store');
+            // });
 
             Route::controller(ScheduleController::class)->group(function () {
                 Route::post('/schedules', 'store');
@@ -111,7 +113,7 @@ Route::middleware([
             });
 
 
-            Route::apiResource('subjects', SubjectController::class);
+            
 
             Route::controller(AttendanceController::class)->group(function () {
                 Route::post('/attendances', 'store');
