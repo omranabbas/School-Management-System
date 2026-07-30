@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\GradeController;
+use App\Http\Controllers\Api\SubjectController;
 use App\Http\Controllers\Api\MarkController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\SectionController;
@@ -77,6 +78,8 @@ Route::middleware([
                     'supervisorSchedule'
                 );
             });
+
+            Route::apiResource('subjects', SubjectController::class);
 
             Route::controller(AttendanceController::class)->group(function () {
                 Route::post('/attendances', 'store');
