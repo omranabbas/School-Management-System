@@ -22,7 +22,9 @@ class GradeController extends Controller
 
 public function index(Request $request)
 {
-    $grades = Grade::with(['supervisor.supervisorProfile'])
+    $grades = Grade::with('supervisor')
+            ->withCount('sections')
+            ->withCount(['enrollments as students_count'])
         ->when($request->filled('stage'), function ($query) use ($request) {
             $query->whereHas(
                 'supervisor.supervisorProfile',
@@ -56,6 +58,8 @@ public function index(Request $request)
             return $this->successResponse(
             new GradeResource(
                 $grade->load('supervisor')
+                    ->loadCount('sections')
+                    ->loadCount(['enrollments as students_count'])
             ),
             'Grade created successfully',
             201
@@ -64,10 +68,12 @@ public function index(Request $request)
 
     public function show(Grade $grade)
     {
+        $grade->load('supervisor');
+        $grade->loadCount('sections');
+        $grade->loadCount(['enrollments as students_count']);
+
         return $this->successResponse(
-            new GradeResource(
-                $grade->load('supervisor')
-            ),
+            new GradeResource($grade),
             'Grade fetched successfully'
         );
     }
@@ -83,6 +89,8 @@ public function index(Request $request)
         return $this->successResponse(
             new GradeResource(
                 $grade->load('supervisor')
+                    ->loadCount('sections')
+                    ->loadCount(['enrollments as students_count'])
             ),
             'Grade updated successfully'
         );
