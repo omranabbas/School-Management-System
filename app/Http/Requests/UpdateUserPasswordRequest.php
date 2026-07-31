@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
-class ResetPasswordRequest extends FormRequest
+class UpdateUserPasswordRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,22 +15,15 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-
-            'token' => [
-                'required',
-            ],
-
-            'email' => [
-                'required',
-                'email',
-            ],
-
             'password' => [
                 'required',
                 'confirmed',
-                'min:8',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised(),
             ],
-
         ];
     }
 }

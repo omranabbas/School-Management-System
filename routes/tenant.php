@@ -7,14 +7,12 @@ use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-use App\Http\Controllers\Api\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
-use App\Http\Controllers\Api\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\UserPasswordController;
 
 use App\Http\Controllers\Api\AttendanceController;
-
 use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\SubjectController;
 use App\Http\Controllers\Api\MarkController;
@@ -49,6 +47,10 @@ Route::middleware([
     Route::post('/register', RegisterController::class);
     Route::post('/login', LoginController::class);
 
+    Route::middleware('auth:sanctum')->put(
+        '/users/{user}/password',
+        [UserPasswordController::class, 'update']
+    );
 
     Route::middleware('auth:sanctum')->group(function () {
 
