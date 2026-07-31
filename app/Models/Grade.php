@@ -29,4 +29,16 @@ class Grade extends Model
     {
         return $this->hasMany(Subject::class);
     }
+
+     public function enrollments()
+    {
+        return $this->hasManyThrough(
+            StudentEnrollment::class,
+            Section::class,
+            'grade_id',
+            'section_id',
+            'id',
+            'id'
+        );
+    }
 }
