@@ -7,11 +7,9 @@ use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-use App\Http\Controllers\Api\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
-use App\Http\Controllers\Api\Auth\ResetPasswordController;
 
 use App\Http\Controllers\Api\AttendanceController;
 
@@ -20,7 +18,6 @@ use App\Http\Controllers\Api\SubjectController;
 use App\Http\Controllers\Api\MarkController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\SectionController;
-use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\StudentEnrollmentController;
 use App\Http\Controllers\Api\StudentProfileController;
 use App\Http\Controllers\Api\TeacherProfileController;
@@ -34,15 +31,6 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->prefix('api')->group(function () {
-
-    // Route::get('/reset-password/{token}', function ($token) {
-    //     return response()->json([
-    //         'token' => $token,
-    //     ]);
-    // })->name('password.reset');
-    // Route::post('/forgot-password', ForgotPasswordController::class);
-    // Route::post('/reset-password', ResetPasswordController::class);
-
 
     // Authentication routes
 
