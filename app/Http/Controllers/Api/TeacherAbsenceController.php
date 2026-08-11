@@ -20,18 +20,23 @@ class TeacherAbsenceController extends Controller
 {
     use ApiResponse;
 
-    public function index()
-    {
-        $absences = TeacherAbsence::with([
-            'teacher',
-            'replacementTeacher',
-        ])->latest()->get();
+  public function index(Request $request)
+{
+    $absences = TeacherAbsence::with([
+        'teacher',
+        'replacementTeacher',
+    ])
+    ->when($request->teacher_id, function ($query) use ($request) {
+        $query->where('teacher_id', $request->teacher_id);
+    })
+    ->latest()
+    ->get();
 
-        return $this->successResponse(
-            TeacherAbsenceResource::collection($absences),
-            'Teacher absences retrieved successfully.'
-        );
-    }
+    return $this->successResponse(
+        TeacherAbsenceResource::collection($absences),
+        'Teacher absences retrieved successfully.'
+    );
+}
 
     public function store(StoreTeacherAbsenceRequest $request)
     {
