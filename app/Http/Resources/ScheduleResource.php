@@ -47,6 +47,10 @@ class ScheduleResource extends JsonResource
                 'id' => $this->teacherSubject?->section?->id,
                 'name' => $this->teacherSubject?->section?->name,
             ],
+            'grade' => [
+                'id' => $this->teacherSubject?->subject?->grade?->id,
+                'name' => $this->teacherSubject?->subject?->grade?->name,
+            ],
 
         ];
     }

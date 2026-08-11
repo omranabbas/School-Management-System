@@ -35,15 +35,6 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->prefix('api')->group(function () {
 
-    // Route::get('/reset-password/{token}', function ($token) {
-    //     return response()->json([
-    //         'token' => $token,
-    //     ]);
-    // })->name('password.reset');
-    // Route::post('/forgot-password', ForgotPasswordController::class);
-    // Route::post('/reset-password', ResetPasswordController::class);
-
-
     // Authentication routes
 
     Route::post('/register', RegisterController::class);
@@ -71,47 +62,12 @@ Route::middleware([
                 ]
             );
         });
-        // Supervisor routes
         Route::apiResource('/enrollments', StudentEnrollmentController::class);
 
-        Route::controller(AttendanceController::class)->group(function () {
-            Route::post('/attendances', 'store');
-            Route::put('/attendances/{attendance}', 'update');
-            Route::delete('/attendances/{attendance}', 'destroy');
-            Route::get(
-                '/attendances/{studentId}',
-                'studentAttendancesById'
-            );
-            Route::get(
-                '/attendances',
-                'studentAttendances'
-            );
-            Route::get(
-                '/supervisor-attendances',
-                'supervisorAttendances'
-            );
-        });
         Route::apiResource('subjects', SubjectController::class);
         Route::apiResource('/teacher-subject', TeacherSubjectController::class);
-        Route::controller(MarkController::class)->group(function () {
-            Route::post('/marks', 'store');
-            Route::get('/mark/{mark}', 'show');
-            Route::get('/marks', 'studentMarks');
-            Route::get('/marks/{studentId}', 'studentMarksById');
-            Route::put('/marks/{mark}', 'update');
-            Route::delete('/marks/{mark}', 'destroy');
 
-            Route::get('/teacher-marks', 'teacherMarks');
-        });
         Route::middleware('role:supervisor')->group(function () {
-
-            // Route::controller(EnrollmentController::class)->group(function () {
-            //     Route::post('/enrollments', 'store');
-            // });
-
-            // Route::controller(TeacherSubjectController::class)->group(function () {
-            //     Route::post('/teacher-subjects', 'store');
-            // });
 
             Route::controller(ScheduleController::class)->group(function () {
                 Route::post('/schedules', 'store');
@@ -123,7 +79,11 @@ Route::middleware([
                     'supervisorSchedule'
                 );
             });
+            Route::controller(MarkController::class)->group(function () {
 
+                Route::get('/mark/{mark}', 'show');
+                Route::get('/marks/{studentId}', 'studentMarksById');
+            });
 
 
 
@@ -131,7 +91,10 @@ Route::middleware([
                 Route::post('/attendances', 'store');
                 Route::put('/attendances/{attendance}', 'update');
                 Route::delete('/attendances/{attendance}', 'destroy');
-
+                Route::get(
+                    '/attendances/{studentId}',
+                    'studentAttendancesById'
+                );
                 Route::get(
                     '/supervisor-attendances',
                     'supervisorAttendances'
@@ -152,6 +115,8 @@ Route::middleware([
             Route::controller(MarkController::class)->group(function () {
                 Route::post('/marks', 'store');
                 Route::get('/marks/{mark}', 'show');
+
+                Route::get('/marks/{studentId}', 'studentMarksById');
                 Route::put('/marks/{mark}', 'update');
                 Route::delete('/marks/{mark}', 'destroy');
 
@@ -173,11 +138,14 @@ Route::middleware([
         Route::middleware('role:student')->group(function () {
 
             Route::controller(ScheduleController::class)->group(function () {
-                Route::get('/student-schedules', 'studentSchedule');
+                Route::get(
+                    '/student-schedules',
+                    'studentSchedule'
+                );
             });
 
             Route::controller(MarkController::class)->group(function () {
-                Route::get('/student-marks', 'studentMarks');
+                Route::get('/marks', 'studentMarks');
             });
 
             Route::controller(AttendanceController::class)->group(function () {

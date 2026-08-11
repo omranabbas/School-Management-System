@@ -110,50 +110,14 @@ class TeacherAbsenceController extends Controller
     ) {
         $this->authorize('approve', $teacherAbsence);
 
-        DB::transaction(function () use ($request, $teacherAbsence) {
+
 
             $teacherAbsence->update([
                 'status' => $request->status,
                 'replacement_teacher_id' => $request->replacement_teacher_id,
             ]);
 
-            if ($request->status !== 'approved') {
-                return;
-            }
-
-            $day = strtolower(
-                Carbon::parse($teacherAbsence->absence_date)->format('l')
-            );
-
-            $teacherSubjectIds = TeacherSubject::where(
-                'teacher_id',
-                $teacherAbsence->teacher_id
-            )->pluck('id');
-
-            $schedules = Schedule::whereIn(
-                'teacher_subject_id',
-                $teacherSubjectIds
-            )
-            ->where('day', $day)
-            ->get();
-
-            foreach ($schedules as $schedule) {
-
-                ScheduleOverride::updateOrCreate(
-                    [
-                        'schedule_id' => $schedule->id,
-                        'date' => $teacherAbsence->absence_date,
-                    ],
-                    [
-                        'teacher_absence_id' => $teacherAbsence->id,
-                        'status' => $request->replacement_teacher_id
-                            ? 'replacement'
-                            : 'cancelled',
-                        'replacement_teacher_id' => $request->replacement_teacher_id,
-                    ]
-                );
-            }
-        });
+           
 
         return $this->successResponse(
             new TeacherAbsenceResource(

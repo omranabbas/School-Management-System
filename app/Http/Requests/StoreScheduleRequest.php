@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 class StoreScheduleRequest extends FormRequest
-{
+{   
     public function authorize(): bool
     {
         return true;
