@@ -16,6 +16,8 @@ class TeacherSubjectResource extends JsonResource
             'teacher' => [
                 'id' => $this->teacher?->id,
                 'name' => $this->teacher?->name,
+                'last_name' => $this->teacher?->last_name,
+                'father_name' => $this->teacher?->father_name,
             ],
 
             'subject' => [

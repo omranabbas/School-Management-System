@@ -18,7 +18,9 @@ class GradeResource extends JsonResource
             'students_count' => $this->students_count,
             'supervisor' => [
                 'id' => $this->supervisor?->id,
-                'name' => $this->supervisor?->name,
+                 'name' => $this->supervisor?->name,
+                'last_name' => $this->supervisor?->last_name,
+                'father_name' => $this->supervisor?->father_name,
             ],
 
         ];

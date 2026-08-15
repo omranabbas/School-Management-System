@@ -30,12 +30,16 @@ class MarkResource extends JsonResource
 
             'teacher' => [
                 'id' => $this->teacherSubject?->teacher?->id,
-                'name' => $this->teacherSubject?->teacher?->name,
+                 'name' => $this->teacherSubject?->teacher?->name,
+                'last_name' => $this->teacherSubject?->teacher?->last_name,
+                'father_name' => $this->teacherSubject?->teacher?->father_name,
             ],
 
             'student' => [
                 'id' => $this->enrollment?->student?->id,
-                'name' => $this->enrollment?->student?->name,
+                 'name' => $this->enrollment?->student?->name,
+                'last_name' => $this->enrollment?->student?->last_name,
+                'father_name' => $this->enrollment?->student?->father_name,
             ],
 
         ];

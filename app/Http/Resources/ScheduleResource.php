@@ -34,12 +34,21 @@ class ScheduleResource extends JsonResource
 
                 'name' => $this->display_teacher?->name
                     ?? $this->teacherSubject?->teacher?->name,
+                'last_name' => $this->display_teacher?->last_name
+                    ?? $this->teacherSubject?->teacher?->last_name,
+                'father_name' => $this->display_teacher?->father_name
+                    ?? $this->teacherSubject?->teacher?->father_name,
             ],
 
             'replacement_teacher' => $this->replacement_teacher
                 ? [
                     'id' => $this->replacement_teacher->id,
-                    'name' => $this->replacement_teacher->name,
+                    'name' => $this->replacement_teacher?->name
+                        ?? $this->teacherSubject?->teacher?->name,
+                    'last_name' => $this->replacement_teacher?->last_name
+                        ?? $this->teacherSubject?->teacher?->last_name,
+                    'father_name' => $this->replacement_teacher?->father_name
+                        ?? $this->teacherSubject?->teacher?->father_name,
                 ]
                 : null,
 

@@ -20,6 +20,8 @@ class TeacherAbsenceResource extends JsonResource
             'teacher' => [
                 'id' => $this->teacher?->id,
                 'name' => $this->teacher?->name,
+                'last_name' => $this->teacher?->last_name,
+                'father_name' => $this->teacher?->father_name,
             ],
 
             'absence_date' => $this->absence_date,
@@ -30,6 +32,8 @@ class TeacherAbsenceResource extends JsonResource
                 ? [
                     'id' => $this->replacementTeacher->id,
                     'name' => $this->replacementTeacher->name,
+                    'last_name' => $this->replacementTeacher->last_name,
+                    'father_name' => $this->replacementTeacher->father_name,
                 ]
                 : null,
 
