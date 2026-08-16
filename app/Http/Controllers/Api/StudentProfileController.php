@@ -42,13 +42,7 @@ class StudentProfileController extends Controller
             );
         }
 
-        if ($request->hasFile('personal_image')) {
-            $validated['personal_image'] = $request->file('personal_image')
-                ->store(
-                    'tenants/' . tenant()->id . '/students/personal_images',
-                    'public'
-                );
-        }
+
 
         $profile = StudentProfile::create($validated);
 
@@ -77,20 +71,7 @@ class StudentProfileController extends Controller
     ) {
         $validated = $request->validated();
 
-        if ($request->hasFile('personal_image')) {
-
-            if ($studentProfile->personal_image) {
-                Storage::disk('public')
-                    ->delete($studentProfile->personal_image);
-            }
-
-            $validated['personal_image'] = $request->file('personal_image')
-                ->store(
-                    'tenants/' . tenant()->id . '/students/personal_images',
-                    'public'
-                );
-        }
-
+        
         $studentProfile->update($validated);
 
         return $this->successResponse(
@@ -103,10 +84,7 @@ class StudentProfileController extends Controller
 
     public function destroy(StudentProfile $studentProfile)
     {
-        if ($studentProfile->personal_image) {
-            Storage::disk('public')
-                ->delete($studentProfile->personal_image);
-        }
+
 
         $studentProfile->delete();
 

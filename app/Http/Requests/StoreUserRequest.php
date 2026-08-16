@@ -43,6 +43,12 @@ class StoreUserRequest extends FormRequest
                 'required',
                 'in:student,teacher',
             ],
+
+               'personal_image' => [
+                'required',
+                'image',
+            ],
+
         ];
     }
 }

@@ -31,6 +31,7 @@ class User extends Authenticatable implements FilamentUser
         'role',
         'password',
         'date_of_birth',
+        'personal_image'
     ];
 
 
@@ -101,5 +102,16 @@ class User extends Authenticatable implements FilamentUser
     public function replacementForAbsences()
     {
         return $this->hasMany(TeacherAbsence::class, 'replacement_teacher_id');
+    }
+
+        protected $appends = [
+        'personal_image_url',
+    ];
+
+    public function getPersonalImageUrlAttribute()
+    {
+        return $this->personal_image
+            ? asset('storage/' . $this->personal_image)
+            : null;
     }
 }

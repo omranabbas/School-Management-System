@@ -23,7 +23,9 @@ class UpdateTeacherProfileRequest extends FormRequest
 
             'certificate_image' => [
                 'sometimes',
-                'image',
+                'file',
+                'mimes:pdf',
+                'max:5120', 
             ],
 
         ];

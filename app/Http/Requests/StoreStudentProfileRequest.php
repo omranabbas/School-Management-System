@@ -33,11 +33,7 @@ class StoreStudentProfileRequest extends FormRequest
                 'string',
             ],
 
-            'personal_image' => [
-                'required',
-                'image',
-            ],
-
+         
         ];
     }
 

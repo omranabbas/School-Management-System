@@ -25,10 +25,7 @@ class UpdateStudentProfileRequest extends FormRequest
                 'string',
             ],
 
-            'personal_image' => [
-                'sometimes',
-                'image',
-            ],
+          
 
         ];
     }

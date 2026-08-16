@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('role', ['student', 'supervisor', 'teacher', 'admin']);
             $table->string('password');
             $table->date('date_of_birth');
+            $table->string('personal_image')->nullable();
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

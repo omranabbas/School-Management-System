@@ -17,7 +17,7 @@ class StudentProfileResource extends JsonResource
 
             'parent_phone' => $this->parent_phone,
 
-            'personal_image_url' => $this->personal_image_url,
+
 
             'student' => [
                 'id' => $this->student?->id,

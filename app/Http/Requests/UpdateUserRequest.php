@@ -59,6 +59,10 @@ class UpdateUserRequest extends FormRequest
                 'sometimes',
                 'in:student,teacher',
             ],
+              'personal_image' => [
+                'sometimes',
+                'image',
+            ],
         ];
     }
 }

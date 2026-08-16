@@ -30,7 +30,9 @@ class StoreTeacherProfileRequest extends FormRequest
 
             'certificate_image' => [
                 'required',
-                'image',
+                'file',
+                'mimes:pdf',
+                'max:5120', 
             ],
 
         ];

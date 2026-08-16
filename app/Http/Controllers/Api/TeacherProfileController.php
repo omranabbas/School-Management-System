@@ -41,7 +41,7 @@ class TeacherProfileController extends Controller
                 422
             );
         }
-
+    
         if ($request->hasFile('certificate_image')) {
             $validated['certificate_image'] = $request->file('certificate_image')
                 ->store(

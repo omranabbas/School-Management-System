@@ -9,6 +9,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
 
@@ -47,6 +48,13 @@ public function index(Request $request)
     {
         $validated = $request->validated();
 
+         if ($request->hasFile('personal_image')) {
+            $validated['personal_image'] = $request->file('personal_image')
+                ->store(
+                    'tenants/' . tenant()->id . '/personal_images',
+                    'public'
+                );
+        }
         $validated['password'] = Hash::make(
             $validated['password']
         );
@@ -84,6 +92,20 @@ public function index(Request $request)
             );
 
         }
+        if ($request->hasFile('personal_image')) {
+
+            if ($user->personal_image) {
+                Storage::disk('public')
+                    ->delete($user->personal_image);
+            }
+
+            $validated['personal_image'] = $request->file('personal_image')
+                ->store(
+                    'tenants/' . tenant()->id . '/personal_images',
+                    'public'
+                );
+        }
+
 
         $user->update($validated);
 
@@ -93,7 +115,11 @@ public function index(Request $request)
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-    {
+    {      
+         if ($user->personal_image) {
+            Storage::disk('public')
+                ->delete($user->personal_image);
+        }
         $user->delete();
 
         return response()->json([
