@@ -31,7 +31,7 @@ class TeachersResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::Users;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-s-academic-cap';
 
     public static function getEloquentQuery(): Builder
     {

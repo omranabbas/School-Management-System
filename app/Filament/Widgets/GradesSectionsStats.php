@@ -6,6 +6,7 @@ use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Grade;
 use App\Models\Section;
+use Filament\Support\Icons\Heroicon;
 
 class GradesSectionsStats extends StatsOverviewWidget
 {
@@ -13,11 +14,11 @@ class GradesSectionsStats extends StatsOverviewWidget
     {
         return [
             Stat::make('Grades', Grade::count())->description('Grades count')
-                ->descriptionIcon('heroicon-o-users')
-                ->color('success'),
+                ->descriptionIcon('heroicon-o-building-library')
+                ->color('success')->chart([0,0]),
             Stat::make('Sections', Section::count())->description('Sections count')
-                ->descriptionIcon('heroicon-o-users')
-                ->color('success'),
+                ->descriptionIcon('heroicon-o-rectangle-group')
+                ->color('success')->chart([0,0]),
         ];
     }
 }

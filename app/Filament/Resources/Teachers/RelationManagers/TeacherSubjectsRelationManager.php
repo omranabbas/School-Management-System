@@ -91,7 +91,7 @@ class TeacherSubjectsRelationManager extends RelationManager
                     ->sortable(),
 
                 TextColumn::make('section.grade.name')
-                    ->label('Section')
+                    ->label('Grade')
                     ->searchable()
                     ->sortable(),
 
