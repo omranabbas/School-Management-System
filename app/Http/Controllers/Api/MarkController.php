@@ -133,7 +133,96 @@ class MarkController extends Controller
             'Mark deleted successfully'
         );
     }
+public function studentMarksById($studentId)
+{
+    $query = Mark::with([
+        'teacherSubject.subject',
+        'teacherSubject.teacher',
+        'teacherSubject.section',
+        'enrollment.student',
+        'enrollment.academicYear',
+    ])
+    ->whereHas('enrollment', function ($q) use ($studentId) {
+        $q->where('student_id', $studentId);
+    });
 
+    // Academic Year
+    $query->when(
+        request()->filled('academic_year_id'),
+        fn ($q) => $q->whereHas(
+            'enrollment',
+            fn ($query) => $query->where(
+                'academic_year_id',
+                request('academic_year_id')
+            )
+        )
+    );
+
+    // Teacher
+    $query->when(
+        request()->filled('teacher_id'),
+        fn ($q) => $q->whereHas(
+            'teacherSubject',
+            fn ($query) => $query->where(
+                'teacher_id',
+                request('teacher_id')
+            )
+        )
+    );
+
+    // Subject
+    $query->when(
+        request()->filled('subject_id'),
+        fn ($q) => $q->whereHas(
+            'teacherSubject',
+            fn ($query) => $query->where(
+                'subject_id',
+                request('subject_id')
+            )
+        )
+    );
+
+    // Section
+    $query->when(
+        request()->filled('section_id'),
+        fn ($q) => $q->whereHas(
+            'teacherSubject',
+            fn ($query) => $query->where(
+                'section_id',
+                request('section_id')
+            )
+        )
+    );
+
+    // Term
+    $query->when(
+        request()->filled('term'),
+        fn ($q) => $q->where(
+            'term',
+            request('term')
+        )
+    );
+
+    // Type
+    $query->when(
+        request()->filled('type'),
+        fn ($q) => $q->where(
+            'type',
+            request('type')
+        )
+    );
+
+    $marks = $query
+        ->latest()
+        ->paginate(
+            request('per_page', 15)
+        );
+
+    return $this->successResponse(
+        MarkResource::collection($marks),
+        'Student marks fetched successfully'
+    );
+}
 public function studentMarks()
 {
     $studentId = Auth::id();

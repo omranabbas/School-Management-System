@@ -101,8 +101,7 @@ Route::middleware([
 
                 Route::get('/mark/{mark}', 'show');
                 Route::get('/marks/{studentId}', 'studentMarksById');
-                                Route::get('/teacher-marks/{teacherId}', 'teacherMarksById');
-
+                Route::get('/teacher-marks/{teacherId}', 'teacherMarksById');
             });
 
 
