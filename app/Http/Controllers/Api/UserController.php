@@ -21,26 +21,26 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-public function index(Request $request)
-{
-    $query = User::query();
+    public function index(Request $request)
+    {
+        $query = User::query();
 
-    if ($request->filled('role')) {
-        $query->where('role', $request->role);
-    }
-
-    $users = $query->latest()->paginate(15);
-
-    $users->getCollection()->each(function ($user) {
-        if ($user->role === 'student') {
-            $user->load('studentProfile');
-        } elseif ($user->role === 'teacher') {
-            $user->load('teacherProfile');
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
         }
-    });
 
-    return $users;
-}
+        $users = $query->latest()->paginate(15);
+
+        $users->getCollection()->each(function ($user) {
+            if ($user->role === 'student') {
+                $user->load('studentProfile');
+            } elseif ($user->role === 'teacher') {
+                $user->load('teacherProfile');
+            }
+        });
+
+        return $users;
+    }
     /**
      * Store a newly created resource in storage.
      */
@@ -117,7 +117,7 @@ public function index(Request $request)
     public function destroy(User $user)
     {      
          if ($user->personal_image) {
-            Storage::disk('public')
+            Storage::disk('public') 
                 ->delete($user->personal_image);
         }
         $user->delete();
