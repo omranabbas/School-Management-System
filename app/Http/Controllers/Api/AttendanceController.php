@@ -13,7 +13,7 @@ use App\Notifications\AttendanceRecordedNotification;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
+use App\Models\AcademicYear;
 class AttendanceController extends Controller
 {
     use ApiResponse;
@@ -176,32 +176,37 @@ class AttendanceController extends Controller
             'Attendances fetched successfully'
         );
     }
-    public function supervisorAttendances()
-    {
-        $supervisorId = Auth::id();
+    public function supervisorAttendances(Request $request)
+{
+    $supervisorId = Auth::id();
 
-        $perPage = request('per_page', 15);
+    $request->validate([
+        'academic_year_id' => [
+            'required',
+            Rule::exists('academic_years', 'id'),
+        ],
+    ]);
 
-        $attendances = Attendance::with([
-            'enrollment.student',
-            'enrollment.section',
-        ])
-            ->whereHas(
-                'enrollment.section.grade',
-                function ($query) use ($supervisorId) {
+    $academicYearId = $request->academic_year_id;
 
-                    $query->where(
-                        'supervisor_id',
-                        $supervisorId
-                    );
-                }
-            )
-            ->latest()
-            ->paginate($perPage);
+    $perPage = $request->integer('per_page', 15);
 
-        return $this->successResponse(
-            AttendanceResource::collection($attendances),
-            'Attendances fetched successfully'
-        );
-    }
+    $attendances = Attendance::with([
+        'enrollment.student',
+        'enrollment.section.grade',
+    ])
+        ->whereHas('enrollment', function ($query) use ($academicYearId) {
+            $query->where('academic_year_id', $academicYearId);
+        })
+        ->whereHas('enrollment.section.grade', function ($query) use ($supervisorId) {
+            $query->where('supervisor_id', $supervisorId);
+        })
+        ->latest()
+        ->paginate($perPage);
+
+    return $this->successResponse(
+        AttendanceResource::collection($attendances),
+        'Attendances fetched successfully'
+    );
+}
 }
