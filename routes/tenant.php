@@ -23,6 +23,8 @@ use App\Http\Controllers\Api\StudentProfileController;
 use App\Http\Controllers\Api\TeacherProfileController;
 use App\Http\Controllers\Api\TeacherSubjectController;
 use App\Http\Controllers\Api\TeacherAbsenceController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\DeviceTokenController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\AcademicYear;
 
@@ -41,6 +43,22 @@ Route::middleware([
     Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/logout', LogoutController::class);
+
+        Route::controller(DeviceTokenController::class)->group(function () {
+            Route::post('/device-tokens', 'store');
+            Route::delete('/device-tokens/{deviceToken}', 'destroy');
+        });
+
+        // Notification routes
+        Route::controller(NotificationController::class)->group(function () {
+            Route::get('/notifications', 'index');
+            Route::get('/notifications/unread', 'unread');
+
+            Route::patch('/notifications/{id}/read', 'markAsRead');
+            Route::patch('/notifications/read-all', 'markAllAsRead');
+
+            Route::delete('/notifications/{id}', 'destroy');
+        });
 
         // Resource routes 
         Route::apiResource('user', UserController::class);

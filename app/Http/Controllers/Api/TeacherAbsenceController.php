@@ -7,8 +7,9 @@ use App\Http\Requests\StoreTeacherAbsenceRequest;
 use App\Http\Requests\UpdateTeacherAbsenceRequest;
 use App\Http\Requests\UpdateTeacherAbsenceStatusRequest;
 use App\Http\Resources\TeacherAbsenceResource;
+use App\Notifications\TeacherAbsenceCreatedNotification;
+use App\Notifications\TeacherAbsenceStatusUpdatedNotification;
 use App\Models\Schedule;
-use App\Models\ScheduleOverride;
 use App\Models\TeacherSubject;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -21,22 +22,22 @@ class TeacherAbsenceController extends Controller
     use ApiResponse;
 
   public function index(Request $request)
-{
-    $absences = TeacherAbsence::with([
-        'teacher',
-        'replacementTeacher',
-    ])
-    ->when($request->teacher_id, function ($query) use ($request) {
-        $query->where('teacher_id', $request->teacher_id);
-    })
-    ->latest()
-    ->get();
+    {
+        $absences = TeacherAbsence::with([
+            'teacher',
+            'replacementTeacher',
+        ])
+        ->when($request->teacher_id, function ($query) use ($request) {
+            $query->where('teacher_id', $request->teacher_id);
+        })
+        ->latest()
+        ->get();
 
-    return $this->successResponse(
-        TeacherAbsenceResource::collection($absences),
-        'Teacher absences retrieved successfully.'
-    );
-}
+        return $this->successResponse(
+            TeacherAbsenceResource::collection($absences),
+            'Teacher absences retrieved successfully.'
+        );
+    }
 
     public function store(StoreTeacherAbsenceRequest $request)
     {
@@ -55,6 +56,10 @@ class TeacherAbsenceController extends Controller
             'teacher',
             'replacementTeacher',
         ]);
+
+        $absence->teacher->notify(
+            new TeacherAbsenceCreatedNotification($absence)
+        );
 
         return $this->successResponse(
             new TeacherAbsenceResource($absence),
@@ -122,7 +127,9 @@ class TeacherAbsenceController extends Controller
                 'replacement_teacher_id' => $request->replacement_teacher_id,
             ]);
 
-           
+            $teacherAbsence->teacher->notify(
+                new TeacherAbsenceStatusUpdatedNotification($teacherAbsence->fresh())
+            );
 
         return $this->successResponse(
             new TeacherAbsenceResource(

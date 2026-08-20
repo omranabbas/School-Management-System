@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMarkRequest;
 use App\Http\Requests\UpdateMarkRequest;
 use App\Http\Resources\MarkResource;
+use App\Notifications\MarkAddedNotification;
+use App\Notifications\MarkUpdatedNotification;
 use App\Traits\ApiResponse;
 use App\Models\TeacherSubject;
 
@@ -34,60 +36,64 @@ class MarkController extends Controller
         );
     }
 
-public function store(StoreMarkRequest $request)
-{   
-    $this->authorize('create', Mark::class);
+    public function store(StoreMarkRequest $request)
+    {   
+        $this->authorize('create', Mark::class);
 
-    $enrollment = StudentEnrollment::findOrFail(
-        $request->enrollment_id
-    );
+        $enrollment = StudentEnrollment::findOrFail(
+            $request->enrollment_id
+        );
 
-    $teacherSubject = TeacherSubject::findOrFail(
-        $request->teacher_subject_id
-    );
+        $teacherSubject = TeacherSubject::findOrFail(
+            $request->teacher_subject_id
+        );
 
-    if ($teacherSubject->teacher_id !== Auth::id()) {
-        return $this->errorResponse(
-            'You are not authorized to add marks for this subject.',
-            403
+        if ($teacherSubject->teacher_id !== Auth::id()) {
+            return $this->errorResponse(
+                'You are not authorized to add marks for this subject.',
+                403
+            );
+        }
+
+        if ($enrollment->section_id !== $teacherSubject->section_id) {
+            return $this->errorResponse(
+                'The selected student does not belong to this section.',
+                422
+            );
+        }
+
+        if (
+            $enrollment->academic_year_id !==
+            $teacherSubject->academic_year_id
+        ) {
+            return $this->errorResponse(
+                'The selected student does not belong to this academic year.',
+                422
+            );
+        }
+
+        $mark = Mark::create(
+            $request->validated()
+        );
+
+        $mark->load([
+            'teacherSubject.subject',
+            'teacherSubject.teacher',
+            'enrollment.student',
+            'enrollment.section',
+            'enrollment.academicYear',
+        ]);
+
+        $mark->enrollment->student->notify(
+            new MarkAddedNotification($mark)
+        );
+
+        return $this->successResponse(
+            new MarkResource($mark),
+            'Mark added successfully',
+            201
         );
     }
-
-    if ($enrollment->section_id !== $teacherSubject->section_id) {
-        return $this->errorResponse(
-            'The selected student does not belong to this section.',
-            422
-        );
-    }
-
-    if (
-        $enrollment->academic_year_id !==
-        $teacherSubject->academic_year_id
-    ) {
-        return $this->errorResponse(
-            'The selected student does not belong to this academic year.',
-            422
-        );
-    }
-
-    $mark = Mark::create(
-        $request->validated()
-    );
-
-    $mark->load([
-        'teacherSubject.subject',
-        'teacherSubject.teacher',
-        'enrollment.student',
-        'enrollment.section',
-        'enrollment.academicYear',
-    ]);
-
-    return $this->successResponse(
-        new MarkResource($mark),
-        'Mark added successfully',
-        201
-    );
-}
 
     public function update(
         UpdateMarkRequest $request,
@@ -104,6 +110,11 @@ public function store(StoreMarkRequest $request)
             'teacherSubject.teacher',
             'enrollment.student',
         ]);
+
+
+        $mark->enrollment->student->notify(
+            new MarkUpdatedNotification($mark)
+        );
 
         return $this->successResponse(
             new MarkResource($mark),

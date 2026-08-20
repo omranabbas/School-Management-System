@@ -32,7 +32,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'date_of_birth',
         'personal_image'
-    ];
+        ];
 
 
     /**
@@ -97,6 +97,11 @@ class User extends Authenticatable implements FilamentUser
     public function teacherAbsences()
     {
         return $this->hasMany(TeacherAbsence::class, 'teacher_id');
+    }
+
+    public function devices()
+    {
+        return $this->hasMany(UserDevice::class);
     }
 
     public function replacementForAbsences()

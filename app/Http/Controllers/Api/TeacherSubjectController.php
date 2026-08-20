@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeacherSubjectRequest;
 use App\Http\Requests\UpdateTeacherSubjectRequest;
 use App\Http\Resources\TeacherSubjectResource;
+use App\Notifications\TeacherAssignedNotification;
 use App\Models\Section;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
@@ -132,6 +133,11 @@ class TeacherSubjectController extends Controller
             'section.grade',
             'academicYear',
         ]);
+        
+
+        $teacherSubject->teacher->notify(
+            new TeacherAssignedNotification($teacherSubject)
+        );
 
         return $this->successResponse(
             new TeacherSubjectResource($teacherSubject),

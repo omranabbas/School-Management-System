@@ -21,9 +21,4 @@ class Schedule extends Model
     {
         return $this->belongsTo(TeacherSubject::class);
     }
-
-    public function overrides()
-    {
-        return $this->hasMany(ScheduleOverride::class);
-    }
 }

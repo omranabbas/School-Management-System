@@ -30,8 +30,4 @@ class TeacherAbsence extends Model
     {
         return $this->belongsTo(User::class, 'replacement_teacher_id');
     }
-    public function scheduleOverrides()
-    {
-        return $this->hasMany(ScheduleOverride::class);
-    }
 }

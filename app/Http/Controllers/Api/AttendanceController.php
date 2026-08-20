@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Http\Requests\UpdateAttendanceRequest;
 use App\Http\Resources\AttendanceResource;
+use App\Notifications\AttendanceRecordedNotification;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -35,6 +36,10 @@ class AttendanceController extends Controller
             'enrollment.student',
             'enrollment.section',
         ]);
+
+        $attendance->enrollment->student->notify(
+            new AttendanceRecordedNotification($attendance)
+        );
 
         return $this->successResponse(
             new AttendanceResource($attendance),
