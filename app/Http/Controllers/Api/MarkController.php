@@ -123,32 +123,9 @@ public function store(StoreMarkRequest $request)
         );
     }
 
-    public function studentMarks()
-    {
-        $studentId = Auth::id();
-$enrollmentQuery = StudentEnrollment::where(
-        'student_id',
-        $studentId
-    );
-
-    $enrollmentQuery->when(
-        request()->filled('academic_year_id'),
-        fn ($q) => $q->where(
-            'academic_year_id',
-            request('academic_year_id')
-        )
-    );
-
-    $enrollment = $enrollmentQuery
-        ->latest()
-        ->first();
-
-    if (! $enrollment) {
-        return $this->errorResponse(
-            'Student is not enrolled.',
-            404
-        );
-    }
+public function studentMarks()
+{
+    $studentId = Auth::id();
 
     $query = Mark::with([
         'teacherSubject.subject',
@@ -156,127 +133,121 @@ $enrollmentQuery = StudentEnrollment::where(
         'enrollment.student',
         'enrollment.section',
         'enrollment.academicYear',
-    ])->where(
-        'enrollment_id',
-        $enrollment->id
-    );
+    ])->whereHas('enrollment', function ($q) use ($studentId) {
+        $q->where('student_id', $studentId);
+
+        $q->when(
+            request()->filled('academic_year_id'),
+            fn ($query) => $query->where(
+                'academic_year_id',
+                request('academic_year_id')
+            )
+        );
+    });
 
     $query->when(
         request()->filled('subject_id'),
-        function ($q) {
-            $q->whereHas(
-                'teacherSubject',
-                fn ($query) => $query->where(
-                    'subject_id',
-                    request('subject_id')
-                )
-            );
-        }
+        fn ($q) => $q->whereHas(
+            'teacherSubject',
+            fn ($query) => $query->where(
+                'subject_id',
+                request('subject_id')
+            )
+        )
     );
 
     $query->when(
         request()->filled('teacher_id'),
-        function ($q) {
-            $q->whereHas(
-                'teacherSubject',
-                fn ($query) => $query->where(
-                    'teacher_id',
-                    request('teacher_id')
-                )
-            );
-        }
+        fn ($q) => $q->whereHas(
+            'teacherSubject',
+            fn ($query) => $query->where(
+                'teacher_id',
+                request('teacher_id')
+            )
+        )
     );
 
     $query->when(
         request()->filled('term'),
-        fn ($q) => $q->where(
-            'term',
-            request('term')
-        )
+        fn ($q) => $q->where('term', request('term'))
     );
 
     $query->when(
         request()->filled('type'),
-        fn ($q) => $q->where(
-            'type',
-            request('type')
-        )
+        fn ($q) => $q->where('type', request('type'))
     );
 
     $marks = $query
         ->latest()
-        ->paginate(
-            request('per_page', 15)
-        );
+        ->paginate(request('per_page', 15));
 
     return $this->successResponse(
         MarkResource::collection($marks),
         'Marks fetched successfully'
     );
 }
-    public function studentMarksById($studentId)
+public function teacherMarksById($teacherId)
 {
-    $enrollmentQuery = StudentEnrollment::where(
-        'student_id',
-        $studentId
-    );
-
-    $enrollmentQuery->when(
-        request()->filled('academic_year_id'),
-        fn ($q) => $q->where(
-            'academic_year_id',
-            request('academic_year_id')
-        )
-    );
-
-    $enrollment = $enrollmentQuery
-        ->latest()
-        ->first();
-
-    if (! $enrollment) {
-        return $this->errorResponse(
-            'Student is not enrolled.',
-            404
-        );
-    }
-
     $query = Mark::with([
         'teacherSubject.subject',
         'teacherSubject.teacher',
+        'teacherSubject.section',
         'enrollment.student',
-        'enrollment.section',
         'enrollment.academicYear',
-    ])->where(
-        'enrollment_id',
-        $enrollment->id
+    ])
+    ->whereHas('teacherSubject', function ($q) use ($teacherId) {
+        $q->where('teacher_id', $teacherId);
+    });
+
+    // Academic Year
+    $query->when(
+        request()->filled('academic_year_id'),
+        fn ($q) => $q->whereHas(
+            'enrollment',
+            fn ($query) => $query->where(
+                'academic_year_id',
+                request('academic_year_id')
+            )
+        )
     );
 
+    // Student
+    $query->when(
+        request()->filled('student_id'),
+        fn ($q) => $q->whereHas(
+            'enrollment',
+            fn ($query) => $query->where(
+                'student_id',
+                request('student_id')
+            )
+        )
+    );
+
+    // Subject
     $query->when(
         request()->filled('subject_id'),
-        function ($q) {
-            $q->whereHas(
-                'teacherSubject',
-                fn ($query) => $query->where(
-                    'subject_id',
-                    request('subject_id')
-                )
-            );
-        }
+        fn ($q) => $q->whereHas(
+            'teacherSubject',
+            fn ($query) => $query->where(
+                'subject_id',
+                request('subject_id')
+            )
+        )
     );
 
+    // Section
     $query->when(
-        request()->filled('teacher_id'),
-        function ($q) {
-            $q->whereHas(
-                'teacherSubject',
-                fn ($query) => $query->where(
-                    'teacher_id',
-                    request('teacher_id')
-                )
-            );
-        }
+        request()->filled('section_id'),
+        fn ($q) => $q->whereHas(
+            'teacherSubject',
+            fn ($query) => $query->where(
+                'section_id',
+                request('section_id')
+            )
+        )
     );
 
+    // Term
     $query->when(
         request()->filled('term'),
         fn ($q) => $q->where(
@@ -285,6 +256,7 @@ $enrollmentQuery = StudentEnrollment::where(
         )
     );
 
+    // Type
     $query->when(
         request()->filled('type'),
         fn ($q) => $q->where(
@@ -301,36 +273,106 @@ $enrollmentQuery = StudentEnrollment::where(
 
     return $this->successResponse(
         MarkResource::collection($marks),
-        'Marks fetched successfully'
+        'Teacher marks fetched successfully'
     );
 }
     public function teacherMarks()
-    {
-        $teacherId = Auth::id();
+{
+    $teacherId = Auth::id();
 
-        $perPage = request('per_page', 15);
+    $query = Mark::with([
+        'teacherSubject.subject',
+        'teacherSubject.teacher',
+        'enrollment.student',
+        'enrollment.section',
+        'enrollment.academicYear',
+    ])->whereHas('teacherSubject', function ($q) use ($teacherId) {
+        $q->where('teacher_id', $teacherId);
+    });
 
-        $marks = Mark::with([
-            'enrollment.student',
-            'teacherSubject.subject',
-            'teacherSubject.teacher',
-        ])
-            ->whereHas(
+    // Academic Year
+    $query->when(
+        request()->filled('academic_year_id'),
+        function ($q) {
+            $q->whereHas(
+                'enrollment',
+                fn ($query) => $query->where(
+                    'academic_year_id',
+                    request('academic_year_id')
+                )
+            );
+        }
+    );
+
+    // Student
+    $query->when(
+        request()->filled('student_id'),
+        function ($q) {
+            $q->whereHas(
+                'enrollment',
+                fn ($query) => $query->where(
+                    'student_id',
+                    request('student_id')
+                )
+            );
+        }
+    );
+
+    // Subject
+    $query->when(
+        request()->filled('subject_id'),
+        function ($q) {
+            $q->whereHas(
                 'teacherSubject',
-                function ($query) use ($teacherId) {
+                fn ($query) => $query->where(
+                    'subject_id',
+                    request('subject_id')
+                )
+            );
+        }
+    );
 
-                    $query->where(
-                        'teacher_id',
-                        $teacherId
-                    );
-                }
-            )
-            ->latest()
-            ->paginate($perPage);
+    // Section
+    $query->when(
+        request()->filled('section_id'),
+        function ($q) {
+            $q->whereHas(
+                'teacherSubject',
+                fn ($query) => $query->where(
+                    'section_id',
+                    request('section_id')
+                )
+            );
+        }
+    );
 
-        return $this->successResponse(
-            MarkResource::collection($marks),
-            'Marks fetched successfully'
+    // Term
+    $query->when(
+        request()->filled('term'),
+        fn ($q) => $q->where(
+            'term',
+            request('term')
+        )
+    );
+
+    // Type
+    $query->when(
+        request()->filled('type'),
+        fn ($q) => $q->where(
+            'type',
+            request('type')
+        )
+    );
+
+    $marks = $query
+        ->latest()
+        ->paginate(
+            request('per_page', 15)
         );
-    }
+
+    return $this->successResponse(
+        MarkResource::collection($marks),
+        'Marks fetched successfully'
+    );
+}
 }
