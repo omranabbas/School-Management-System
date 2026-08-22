@@ -20,7 +20,6 @@ class AttendanceRecordedNotification extends Notification
     {
         return [
             'database',
-            FcmChannel::class,
         ];
     }
 

@@ -20,7 +20,6 @@ class TeacherAbsenceCreatedNotification extends Notification
     {
         return [
             'database',
-            FcmChannel::class,
         ];
     }
 

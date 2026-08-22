@@ -20,7 +20,6 @@ class MarkAddedNotification extends Notification
     {
         return [
             'database',
-            FcmChannel::class,
         ];
     }
     public function toDatabase(object $notifiable): array

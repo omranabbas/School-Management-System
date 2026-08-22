@@ -20,7 +20,6 @@ class MarkUpdatedNotification extends Notification
     {
         return [
             'database',
-            FcmChannel::class,
         ];
     }
 

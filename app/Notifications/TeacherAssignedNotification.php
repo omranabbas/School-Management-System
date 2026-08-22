@@ -20,7 +20,6 @@ class TeacherAssignedNotification extends Notification
     {
         return [
             'database',
-            FcmChannel::class,
         ];
     }
 
