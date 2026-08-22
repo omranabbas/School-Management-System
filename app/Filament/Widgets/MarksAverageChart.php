@@ -47,13 +47,17 @@ class MarksAverageChart extends ChartWidget
 
                     'data' => $academicYears
                         ->map(
-                            fn ($year) =>
-                                round($averages[$year->id] ?? 0, 2)
+                            fn($year) =>
+                            round($averages[$year->id] ?? 0, 2)
                         )
                         ->toArray(),
 
-                    'borderColor' => 'rgb(59, 130, 246)',
-                    'backgroundColor' => 'rgba(59, 130, 246, 0.15)',
+                    'borderColor' => 'rgb(250, 204, 21)',
+                    'backgroundColor' => 'rgba(250, 204, 21, 0.15)',
+                    'pointBackgroundColor' => 'rgb(250, 204, 21)',
+                    'pointBorderColor' => 'rgb(250, 204, 21)',
+                    'pointHoverBackgroundColor' => 'rgb(250, 204, 21)',
+                    'pointHoverBorderColor' => 'rgb(250, 204, 21)',
 
                     'fill' => true,
                     'tension' => 0.3,

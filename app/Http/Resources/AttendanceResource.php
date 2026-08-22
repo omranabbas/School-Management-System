@@ -20,17 +20,18 @@ class AttendanceResource extends JsonResource
             'student' => [
                 'id' => $this->enrollment?->student?->id,
                 'name' => $this->enrollment?->student?->name,
-                'last_name'=>$this->enrollment?->student?->last_name,
-                'father_name'=>$this->enrollment?->student?->father_name,
+                'last_name' => $this->enrollment?->student?->last_name,
+                'father_name' => $this->enrollment?->student?->father_name,
             ],
 
             'section' => [
                 'id' => $this->enrollment?->section?->id,
                 'name' => $this->enrollment?->section?->name,
             ],
-            'grade'=>[
+            'grade' => [
                 'id' => $this->enrollment?->section?->grade?->id,
-                'name' => $this->enrollment?->section?->grade?->name,           ]
+                'name' => $this->enrollment?->section?->grade?->name,
+            ]
 
         ];
     }

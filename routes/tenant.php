@@ -42,6 +42,8 @@ Route::middleware([
 
     Route::middleware('auth:sanctum')->group(function () {
 
+
+
         Route::post('/logout', LogoutController::class);
 
         Route::controller(DeviceTokenController::class)->group(function () {
@@ -66,6 +68,7 @@ Route::middleware([
         Route::apiResource('section', SectionController::class);
         Route::apiResource('student-profile', StudentProfileController::class);
         Route::apiResource('teacher-profile', TeacherProfileController::class);
+        Route::apiResource('teacher-absences', TeacherAbsenceController::class);
         Route::get('/academic-years', function () {
             $academicYears = AcademicYear::orderByDesc('name')->get();
 
@@ -98,6 +101,7 @@ Route::middleware([
 
                 Route::get('/mark/{mark}', 'show');
                 Route::get('/marks/{studentId}', 'studentMarksById');
+                Route::get('/teacher-marks/{teacherId}', 'teacherMarksById');
             });
 
 
@@ -129,9 +133,9 @@ Route::middleware([
 
             Route::controller(MarkController::class)->group(function () {
                 Route::post('/marks', 'store');
-                Route::get('/marks/{mark}', 'show');
+                // Route::get('/marks/{mark}', 'show');
 
-                Route::get('/marks/{studentId}', 'studentMarksById');
+                // Route::get('/marks/{studentId}', 'studentMarksById');
                 Route::put('/marks/{mark}', 'update');
                 Route::delete('/marks/{mark}', 'destroy');
 
@@ -140,11 +144,6 @@ Route::middleware([
 
             Route::controller(ScheduleController::class)->group(function () {
                 Route::get('/teacher-schedules', 'teacherSchedule');
-            });
-
-            Route::middleware('auth:sanctum')->group(function () {
-
-                Route::apiResource('teacher-absences', TeacherAbsenceController::class);
             });
         });
 

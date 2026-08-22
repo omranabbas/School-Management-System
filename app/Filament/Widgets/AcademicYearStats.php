@@ -10,6 +10,7 @@ use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Support\Icons\Heroicon;
 
+
 class AcademicYearStats extends StatsOverviewWidget
 {
     use InteractsWithPageFilters;
@@ -59,7 +60,7 @@ class AcademicYearStats extends StatsOverviewWidget
                         : 'All teachers'
                 )
                 ->descriptionIcon('heroicon-o-academic-cap')
-                ->color('info')->chart([0,0]),
+                ->color('success')->chart([0,0]),
         ];
     }
 }
